@@ -16,6 +16,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "Player.h"
+#include "Platform.h"
 
 class Game
 {
@@ -46,6 +47,8 @@ private:
 	bool m_DELETEexitGame; // control exiting game
 
 	Player m_player;
+	
+	std::vector<Platform> m_platforms;
 
 };
 

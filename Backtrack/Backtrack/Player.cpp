@@ -13,6 +13,8 @@ Player::Player()
 	m_hitbox.setFillColor(sf::Color::White);
 	m_hitbox.setOutlineColor(sf::Color::Black);
 	m_hitbox.setOutlineThickness(2.0f);
+
+	m_groundLevel = 2000.0f;
 }
 
 Player::~Player()
@@ -70,12 +72,29 @@ void Player::checkInput()
 		m_playerState = PlayerState::Jumping;
 	}
 	
+	if (m_position.y < m_groundLevel)
+	{
+		m_playerState = PlayerState::Jumping;
+	}
+
 	if (m_playerState == PlayerState::Jumping)
 	{
-		m_velocity.y += 0.4f; // Apply gravity
-		if (m_position.y >= 400.1f)
+		if (m_velocity.y < 8.0f)
 		{
-			m_position.y = 400.0f;
+			m_velocity.y += 0.4f; // Apply gravity
+		}
+		
+		if (m_position.y > m_groundLevel)
+		{
+			if (m_groundLevel == 2000.0f)
+			{
+				m_position.y = 400.0f;
+			}
+			else
+			{
+				m_position.y = m_groundLevel;
+			}
+			
 			m_velocity.y = 0.0f;
 			m_playerState = PlayerState::Idle;
 		}
@@ -107,4 +126,38 @@ void Player::checkState()
 	default:
 		break;
 	}
+}
+
+bool Player::checkGroundCollision(Platform& t_platform)
+{
+	sf::Vector2f bottomCenterPlayer = sf::Vector2f(m_hitbox.getPosition().x, m_hitbox.getPosition().y + m_hitbox.getSize().y / 2.0f);
+
+	if (t_platform.getShape().getGlobalBounds().contains(bottomCenterPlayer))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void Player::calculateGroundLevel(Platform& t_platform)
+{
+	m_groundLevel = t_platform.getPosition().y - t_platform.getShape().getSize().y / 2.0f - m_hitbox.getSize().y / 2.0f;
+}
+
+void Player::setGroundLevel(float t_groundLevel)
+{
+	m_groundLevel = t_groundLevel;
+}
+
+sf::Vector2f Player::getPosition()
+{
+	return m_position;
+}
+
+PlayerState Player::getState()
+{
+	return m_playerState;
 }

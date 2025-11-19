@@ -110,7 +110,26 @@ void Game::update(sf::Time t_deltaTime)
 		m_window.close();
 	}
 
+	bool noPlatformCollision = true;
+
+	for (Platform& platform : m_platforms)
+	{
+		platform.activateInRange(m_player.getPosition());
+
+		if (platform.isActive() && m_player.checkGroundCollision(platform))
+		{
+			m_player.calculateGroundLevel(platform);
+			noPlatformCollision = false;
+		}
+	}
+
+	if (noPlatformCollision)
+	{
+		m_player.setGroundLevel(2000.0f);
+	}
+
 	m_player.update();
+
 }
 
 /// <summary>
@@ -119,6 +138,14 @@ void Game::update(sf::Time t_deltaTime)
 void Game::render()
 {
 	m_window.clear(sf::Color::White);
+
+	for (Platform& platform : m_platforms)
+	{
+		if (platform.isActive())
+		{
+			platform.render(m_window);
+		}
+	}
 
 	m_player.render(m_window);
 
@@ -159,4 +186,14 @@ void Game::setup()
 		std::cout << "Error loading beep sound" << std::endl;
 	}
 	//m_DELETEsound.play(); // test sound
+
+
+	Platform ground;
+	m_platforms.push_back(ground);
+
+	Platform platform1(sf::Vector2f(200.0f, 20.0f), sf::Vector2f(600.0f, 500.0f));
+	m_platforms.push_back(platform1);
+
+	Platform platform2(sf::Vector2f(200.0f, 20.0f), sf::Vector2f(400.0f, 400.0f));
+	m_platforms.push_back(platform2);
 }
