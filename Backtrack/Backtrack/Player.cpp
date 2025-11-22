@@ -1,10 +1,18 @@
 #include "Player.h"
 
-Player::Player()
+Player::Player() : 
+	m_texture("ASSETS\\IMAGES\\Player-Spritesheet.png"),
+	m_sprite(m_texture)
 {
+	m_frameSize = sf::Vector2i(50, 37);
+	m_playerTime = sf::seconds(0.2f);
+	m_currentPlayerFrame = 0;
+
+	m_previousState = PlayerState::None;
 	m_playerState = PlayerState::Idle;
 
 	m_position = sf::Vector2f(100.0f, 400.0f);
+	m_spritePosition = sf::Vector2f(m_position.x + 6.0f, m_position.y - 6.0f);
 	m_speed = 2.0f;
 
 	m_hitbox.setSize(sf::Vector2f(30.0f, 50.0f));
@@ -15,6 +23,11 @@ Player::Player()
 	m_hitbox.setOutlineThickness(2.0f);
 
 	m_groundLevel = 2000.0f;
+
+	m_sprite.setTextureRect(sf::IntRect(sf::Vector2i(0.0f, 0.0f), m_frameSize));
+	m_sprite.setOrigin(sf::Vector2f(55.0f / 2.0f, 37.0f / 2.0f));
+	m_sprite.setPosition(m_spritePosition);
+	m_sprite.setScale(sf::Vector2f(2.0f, 2.0f));
 }
 
 Player::~Player()
@@ -24,12 +37,19 @@ Player::~Player()
 void Player::update()
 {
 	checkInput();
-	checkState();
+	//checkState();
+
+	if (m_playerState != m_previousState)
+	{
+		setFrames();
+	}
+	animate();
 }
 
 void Player::render(sf::RenderWindow& t_window)
 {
 	t_window.draw(m_hitbox);
+	t_window.draw(m_sprite);	
 }
 
 void Player::checkInput()
@@ -104,6 +124,9 @@ void Player::checkInput()
 	m_position += m_velocity;
 	m_hitbox.setPosition(m_position);
 
+	m_spritePosition = sf::Vector2f(m_position.x + 6.0f, m_position.y - 6.0f);
+	m_sprite.setPosition(m_spritePosition);
+
 	//std::cout << m_velocity.x << std::endl;
 }
 
@@ -150,6 +173,58 @@ void Player::calculateGroundLevel(Platform& t_platform)
 void Player::setGroundLevel(float t_groundLevel)
 {
 	m_groundLevel = t_groundLevel;
+}
+
+void Player::animate()
+{
+	if (!m_playerFrames.empty())
+	{
+		if (m_playerClock.getElapsedTime() > m_playerTime)
+		{
+			if (m_currentPlayerFrame + 1 < m_playerFrames.size())
+			{
+				m_currentPlayerFrame++;
+			}
+			else
+			{
+				m_currentPlayerFrame = 0;
+			}
+
+			m_playerClock.restart();
+		}
+
+		m_sprite.setTextureRect(m_playerFrames[m_currentPlayerFrame]);
+		m_previousState = m_playerState;
+	}
+}
+
+void Player::addFrame(sf::IntRect& t_frame)
+{
+	m_playerFrames.push_back(t_frame);
+}
+
+void Player::setFrames()
+{
+	m_playerFrames.clear();
+	m_currentPlayerFrame = 0;
+
+	switch (m_playerState)
+	{
+	case PlayerState::Idle:
+		addFrame(sf::IntRect(sf::Vector2i(0, 0), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(50, 0), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(100, 0), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(150, 0), m_frameSize));
+		break;
+	case PlayerState::Running:
+		break;
+	case PlayerState::Jumping:
+		break;
+	case PlayerState::Dashing:
+		break;
+	default:
+		break;
+	}
 }
 
 sf::Vector2f Player::getPosition()

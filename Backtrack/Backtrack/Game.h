@@ -34,7 +34,8 @@ private:
 	void render();
 	
 	void setup();
-	
+	void setupImages();
+
 	sf::RenderWindow m_window; // main SFML window
 	sf::Font m_jerseyFont;// font used by message
 	

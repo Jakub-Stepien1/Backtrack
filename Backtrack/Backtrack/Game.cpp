@@ -14,7 +14,8 @@ Game::Game() :
 	m_window{ sf::VideoMode{ sf::Vector2u{800U, 600U}, 32U }, "SFML Game 3.0" },
 	m_DELETEexitGame{false} //when true game will exit
 {
-	setup(); // load font, texture and sounds
+	setup(); // load font and sounds
+	setupImages(); // load images
 }
 
 /// <summary>
@@ -172,21 +173,11 @@ void Game::setup()
 	m_DELETEwelcomeMessage.setFillColor(sf::Color::Red);
 	m_DELETEwelcomeMessage.setOutlineThickness(2.0f);
 
-	if (!m_DELETElogoTexture.loadFromFile("ASSETS\\IMAGES\\SFML-LOGO.png"))
-	{
-		// simple error message if previous call fails
-		std::cout << "problem loading logo" << std::endl;
-	}
-
-	m_DELETElogoSprite.setTexture(m_DELETElogoTexture, true);// to reset the dimensions of texture
-	m_DELETElogoSprite.setPosition(sf::Vector2f{ 150.0f, 50.0f });
-
 	if (!m_DELETEsoundBuffer.loadFromFile("ASSETS\\AUDIO\\beep.wav"))
 	{
 		std::cout << "Error loading beep sound" << std::endl;
 	}
 	//m_DELETEsound.play(); // test sound
-
 
 	Platform ground;
 	m_platforms.push_back(ground);
@@ -196,4 +187,16 @@ void Game::setup()
 
 	Platform platform2(sf::Vector2f(200.0f, 20.0f), sf::Vector2f(400.0f, 400.0f));
 	m_platforms.push_back(platform2);
+}
+
+void Game::setupImages()
+{
+	if (!m_DELETElogoTexture.loadFromFile("ASSETS\\IMAGES\\SFML-LOGO.png"))
+	{
+		// simple error message if previous call fails
+		std::cout << "problem loading logo" << std::endl;
+	}
+
+	m_DELETElogoSprite.setTexture(m_DELETElogoTexture, true);// to reset the dimensions of texture
+	m_DELETElogoSprite.setPosition(sf::Vector2f{ 150.0f, 50.0f });
 }
