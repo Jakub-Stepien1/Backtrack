@@ -5,7 +5,7 @@ Player::Player() :
 	m_sprite(m_texture)
 {
 	m_frameSize = sf::Vector2i(50, 37);
-	m_playerTime = sf::seconds(0.2f);
+	m_playerTime = sf::seconds(0.15f);
 	m_currentPlayerFrame = 0;
 
 	m_previousState = PlayerState::None;
@@ -18,8 +18,8 @@ Player::Player() :
 	m_hitbox.setSize(sf::Vector2f(30.0f, 50.0f));
 	m_hitbox.setOrigin(m_hitbox.getSize() / 2.0f);
 	m_hitbox.setPosition(m_position);
-	m_hitbox.setFillColor(sf::Color::White);
-	m_hitbox.setOutlineColor(sf::Color::Black);
+	m_hitbox.setFillColor(sf::Color::Transparent);
+	m_hitbox.setOutlineColor(sf::Color::Green);
 	m_hitbox.setOutlineThickness(2.0f);
 
 	m_groundLevel = 2000.0f;
@@ -37,13 +37,21 @@ Player::~Player()
 void Player::update()
 {
 	checkInput();
-	//checkState();
+	checkState();
 
 	if (m_playerState != m_previousState)
 	{
 		setFrames();
 	}
-	animate();
+
+	if (m_playerState != PlayerState::Jumping)
+	{
+		animate();
+	}
+	else
+	{
+		playAnimationOnce();
+	}
 }
 
 void Player::render(sf::RenderWindow& t_window)
@@ -57,36 +65,30 @@ void Player::checkInput()
 #pragma region Running
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 	{
-		m_velocity.x -= 0.4f;
-		if (m_playerState != PlayerState::Jumping)
+		m_sprite.setScale(sf::Vector2f(-2.0f, 2.0f)); // Flip sprite left
+		m_velocity.x -= 0.5f;
+		if (m_playerState != PlayerState::Jumping 
+			&& m_playerState != PlayerState::Falling)
 		{
 			m_playerState = PlayerState::Running;
 		}
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 	{
-		m_velocity.x += 0.4f;
-		if (m_playerState != PlayerState::Jumping)
+		m_sprite.setScale(sf::Vector2f(2.0f, 2.0f)); // Flip sprite right
+		m_velocity.x += 0.5f;
+		if (m_playerState != PlayerState::Jumping 
+			&& m_playerState != PlayerState::Falling)
 		{
 			m_playerState = PlayerState::Running;
 		}
 	}
 
-	if (std::abs(m_velocity.x) > 0.05f) // Apply friction
-	{
-		m_velocity.x *= 0.9f;
-	}
-	else
-	{
-		m_velocity.x = 0.0f;
-		if (m_playerState != PlayerState::Jumping)
-		{
-			m_playerState = PlayerState::Idle;
-		}
-	}
 #pragma endregion
 #pragma region Jumping
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && m_playerState != PlayerState::Jumping)
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) 
+		&& m_playerState != PlayerState::Jumping 
+		&& m_playerState != PlayerState::Falling)
 	{
 		m_velocity.y = -10.0f;
 		m_playerState = PlayerState::Jumping;
@@ -94,14 +96,21 @@ void Player::checkInput()
 	
 	if (m_position.y < m_groundLevel)
 	{
-		m_playerState = PlayerState::Jumping;
+		if (m_velocity.y < 0.0f)
+		{
+			m_playerState = PlayerState::Jumping;
+		}
+		else
+		{
+			m_playerState = PlayerState::Falling;
+		}
 	}
 
-	if (m_playerState == PlayerState::Jumping)
+	if (m_playerState == PlayerState::Jumping || m_playerState == PlayerState::Falling)
 	{
 		if (m_velocity.y < 8.0f)
 		{
-			m_velocity.y += 0.4f; // Apply gravity
+			m_velocity.y += 0.4f; // Apply gravity	
 		}
 		
 		if (m_position.y > m_groundLevel)
@@ -124,9 +133,22 @@ void Player::checkInput()
 	m_position += m_velocity;
 	m_hitbox.setPosition(m_position);
 
-	m_spritePosition = sf::Vector2f(m_position.x + 6.0f, m_position.y - 6.0f);
+	m_spritePosition = sf::Vector2f(m_position.x, m_position.y - 6.0f);
 	m_sprite.setPosition(m_spritePosition);
 
+
+	if (std::abs(m_velocity.x) > 0.05f) // Apply friction
+	{
+		m_velocity.x *= 0.8f;
+	}
+	else
+	{
+		m_velocity.x = 0.0f;
+		if (m_playerState != PlayerState::Jumping && m_playerState != PlayerState::Falling)
+		{
+			m_playerState = PlayerState::Idle;
+		}
+	}
 	//std::cout << m_velocity.x << std::endl;
 }
 
@@ -143,6 +165,9 @@ void Player::checkState()
 	case PlayerState::Jumping:
 		std::cout << "State: Jumping" << std::endl;
 		break;
+	case PlayerState::Falling:
+		std::cout << "State: Falling" << std::endl;
+		break;
 	case PlayerState::Dashing:
 		std::cout << "State: Dashing" << std::endl;
 		break;
@@ -153,7 +178,8 @@ void Player::checkState()
 
 bool Player::checkGroundCollision(Platform& t_platform)
 {
-	sf::Vector2f bottomCenterPlayer = sf::Vector2f(m_hitbox.getPosition().x, m_hitbox.getPosition().y + m_hitbox.getSize().y / 2.0f);
+	sf::Vector2f bottomCenterPlayer = sf::Vector2f(m_position.x, m_position.y + m_hitbox.getSize().y / 2.0f);
+	bottomCenterPlayer += m_velocity;
 
 	if (t_platform.getShape().getGlobalBounds().contains(bottomCenterPlayer))
 	{
@@ -198,6 +224,25 @@ void Player::animate()
 	}
 }
 
+void Player::playAnimationOnce()
+{
+	if (!m_playerFrames.empty())
+	{
+		if (m_playerClock.getElapsedTime() > m_playerTime)
+		{
+			if (m_currentPlayerFrame + 1 < m_playerFrames.size())
+			{
+				m_currentPlayerFrame++;
+			}
+
+			m_playerClock.restart();
+		}
+
+		m_sprite.setTextureRect(m_playerFrames[m_currentPlayerFrame]);
+		m_previousState = m_playerState;
+	}
+}
+
 void Player::addFrame(sf::IntRect& t_frame)
 {
 	m_playerFrames.push_back(t_frame);
@@ -210,15 +255,35 @@ void Player::setFrames()
 
 	switch (m_playerState)
 	{
+	case PlayerState::None:
+		break;
 	case PlayerState::Idle:
+		m_playerTime = sf::seconds(0.15f);
 		addFrame(sf::IntRect(sf::Vector2i(0, 0), m_frameSize));
 		addFrame(sf::IntRect(sf::Vector2i(50, 0), m_frameSize));
 		addFrame(sf::IntRect(sf::Vector2i(100, 0), m_frameSize));
 		addFrame(sf::IntRect(sf::Vector2i(150, 0), m_frameSize));
 		break;
 	case PlayerState::Running:
+		m_playerTime = sf::seconds(0.15f);
+		addFrame(sf::IntRect(sf::Vector2i(50, 37), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(100, 37), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(150, 37), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(200, 37), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(250, 37), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(300, 37), m_frameSize));
 		break;
 	case PlayerState::Jumping:
+		m_playerTime = sf::seconds(0.1f);
+		addFrame(sf::IntRect(sf::Vector2i(0, 74), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(50, 74), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(100, 74), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(150, 74), m_frameSize));
+		break;
+	case PlayerState::Falling:
+		m_playerTime = sf::seconds(0.15f);
+		addFrame(sf::IntRect(sf::Vector2i(50, 111), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(100, 111), m_frameSize));
 		break;
 	case PlayerState::Dashing:
 		break;

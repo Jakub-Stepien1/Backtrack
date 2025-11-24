@@ -11,6 +11,7 @@ enum class PlayerState
 	Idle,
 	Running,
 	Jumping,
+	Falling,
 	Dashing
 };
 
@@ -32,6 +33,7 @@ public:
 	void setGroundLevel(float t_groundLevel);
 
 	void animate();
+	void playAnimationOnce();
 	void addFrame(sf::IntRect& t_frame);
 	void setFrames();
 
