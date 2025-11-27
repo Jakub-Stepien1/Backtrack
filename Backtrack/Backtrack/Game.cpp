@@ -140,6 +140,8 @@ void Game::render()
 {
 	m_window.clear(sf::Color::White);
 
+	m_window.draw(m_backgroundSprite);
+
 	for (Platform& platform : m_platforms)
 	{
 		if (platform.isActive())
@@ -196,7 +198,14 @@ void Game::setupImages()
 		// simple error message if previous call fails
 		std::cout << "problem loading logo" << std::endl;
 	}
+	if (!m_backgroundTexture.loadFromFile("ASSETS\\IMAGES\\background.png"))
+	{
+		std::cout << "problem loading background" << std::endl;
+	}
 
 	m_DELETElogoSprite.setTexture(m_DELETElogoTexture, true);// to reset the dimensions of texture
 	m_DELETElogoSprite.setPosition(sf::Vector2f{ 150.0f, 50.0f });
+
+	m_backgroundSprite.setTexture(m_backgroundTexture, true);
+	m_backgroundSprite.setScale(sf::Vector2f(1.2f, 1.6f));
 }

@@ -51,6 +51,9 @@ private:
 	
 	std::vector<Platform> m_platforms;
 
+	sf::Texture m_backgroundTexture;
+	sf::Sprite m_backgroundSprite{m_backgroundTexture};
+
 };
 
 #pragma warning( pop ) 
