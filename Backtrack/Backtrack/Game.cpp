@@ -11,11 +11,12 @@
 /// load and setup the sounds
 /// </summary>
 Game::Game() :
-	m_window{ sf::VideoMode{ sf::Vector2u{800U, 600U}, 32U }, "SFML Game 3.0" },
+	m_window{ sf::VideoMode{ sf::Vector2u{1080U, 720U}, 32U }, "Backtrack" },
 	m_DELETEexitGame{false} //when true game will exit
 {
 	setup(); // load font and sounds
 	setupImages(); // load images
+	setupGame(); // setup game objects
 }
 
 /// <summary>
@@ -150,6 +151,17 @@ void Game::render()
 		}
 	}
 
+	for (int row = 0; row < TILE_ROWS; row++)
+	{
+		for (int col = 0; col < TILE_COLS; col++)
+		{
+			if (m_grid[row][col] != 0)
+			{
+				m_tiles[row][col].render(m_window);
+			}
+		}
+	}
+
 	m_player.render(m_window);
 
 	//m_window.draw(m_DELETElogoSprite);
@@ -181,14 +193,6 @@ void Game::setup()
 	}
 	//m_DELETEsound.play(); // test sound
 
-	Platform ground;
-	m_platforms.push_back(ground);
-
-	Platform platform1(sf::Vector2f(200.0f, 20.0f), sf::Vector2f(600.0f, 500.0f));
-	m_platforms.push_back(platform1);
-
-	Platform platform2(sf::Vector2f(200.0f, 20.0f), sf::Vector2f(400.0f, 400.0f));
-	m_platforms.push_back(platform2);
 }
 
 void Game::setupImages()
@@ -198,14 +202,58 @@ void Game::setupImages()
 		// simple error message if previous call fails
 		std::cout << "problem loading logo" << std::endl;
 	}
+	m_DELETElogoSprite.setTexture(m_DELETElogoTexture, true);// to reset the dimensions of texture
+	m_DELETElogoSprite.setPosition(sf::Vector2f{ 150.0f, 50.0f });
+
 	if (!m_backgroundTexture.loadFromFile("ASSETS\\IMAGES\\background.png"))
 	{
 		std::cout << "problem loading background" << std::endl;
 	}
-
-	m_DELETElogoSprite.setTexture(m_DELETElogoTexture, true);// to reset the dimensions of texture
-	m_DELETElogoSprite.setPosition(sf::Vector2f{ 150.0f, 50.0f });
-
 	m_backgroundSprite.setTexture(m_backgroundTexture, true);
 	m_backgroundSprite.setScale(sf::Vector2f(1.2f, 1.6f));
+
+	if (!m_tileSetTexture.loadFromFile("ASSETS\\IMAGES\\terrain18px-sheet.png"))
+	{
+		std::cout << "problem loading tileset" << std::endl;
+	}
+}
+
+void Game::setupGame()
+{
+	Platform ground;
+	m_platforms.push_back(ground);
+
+	Platform platform1(sf::Vector2f(200.0f, 20.0f), sf::Vector2f(600.0f, 500.0f));
+	m_platforms.push_back(platform1);
+
+	Platform platform2(sf::Vector2f(200.0f, 20.0f), sf::Vector2f(400.0f, 400.0f));
+	m_platforms.push_back(platform2);
+
+	for (int row = 0; row < TILE_ROWS; row++)
+	{
+		for (int col = 0; col < TILE_COLS; col++)
+		{
+			SurroundingTiles surrounding{0,0,0,0};
+			if (col > 0)
+			{
+				surrounding.left = m_grid[row][col - 1];
+			}
+			if (col < TILE_COLS - 1)
+			{
+				surrounding.right = m_grid[row][col + 1];
+			}
+			if (row > 0)
+			{
+				surrounding.top = m_grid[row - 1][col];
+			}
+			if (row < TILE_ROWS - 1)
+			{
+				surrounding.bottom = m_grid[row + 1][col];
+			}
+
+			m_tiles[row][col].setTile(m_grid[row][col], surrounding);
+			m_tiles[row][col].setPosition(sf::Vector2f(col * 18 * TILE_SCALE, row * 18 * TILE_SCALE));
+			m_tiles[row][col].setTexture(m_tileSetTexture);
+		}
+	}
 }

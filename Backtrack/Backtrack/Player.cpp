@@ -1,10 +1,10 @@
 #include "Player.h"
 
 Player::Player() : 
-	m_texture("ASSETS\\IMAGES\\Player-Spritesheet.png"),
+	m_texture("ASSETS\\IMAGES\\all48x61-playerSheet.png"),
 	m_sprite(m_texture)
 {
-	m_frameSize = sf::Vector2i(50, 37);
+	m_frameSize = sf::Vector2i(48, 61);
 	m_playerTime = sf::seconds(0.15f);
 	m_currentPlayerFrame = 0;
 
@@ -25,7 +25,7 @@ Player::Player() :
 	m_groundLevel = 2000.0f;
 
 	m_sprite.setTextureRect(sf::IntRect(sf::Vector2i(0.0f, 0.0f), m_frameSize));
-	m_sprite.setOrigin(sf::Vector2f(55.0f / 2.0f, 37.0f / 2.0f));
+	m_sprite.setOrigin(sf::Vector2f(48.0f / 2.0f, 61.0f / 2.0f));
 	m_sprite.setPosition(m_spritePosition);
 	m_sprite.setScale(sf::Vector2f(2.0f, 2.0f));
 }
@@ -37,7 +37,7 @@ Player::~Player()
 void Player::update()
 {
 	checkInput();
-	checkState();
+	//checkState();
 
 	if (m_playerState != m_previousState)
 	{
@@ -258,34 +258,44 @@ void Player::setFrames()
 	case PlayerState::None:
 		break;
 	case PlayerState::Idle:
-		m_playerTime = sf::seconds(0.15f);
+		m_playerTime = sf::seconds(0.3f);
 		addFrame(sf::IntRect(sf::Vector2i(0, 0), m_frameSize));
-		addFrame(sf::IntRect(sf::Vector2i(50, 0), m_frameSize));
-		addFrame(sf::IntRect(sf::Vector2i(100, 0), m_frameSize));
-		addFrame(sf::IntRect(sf::Vector2i(150, 0), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(48, 0), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(96, 0), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(144, 0), m_frameSize));
 		break;
 	case PlayerState::Running:
-		m_playerTime = sf::seconds(0.15f);
-		addFrame(sf::IntRect(sf::Vector2i(50, 37), m_frameSize));
-		addFrame(sf::IntRect(sf::Vector2i(100, 37), m_frameSize));
-		addFrame(sf::IntRect(sf::Vector2i(150, 37), m_frameSize));
-		addFrame(sf::IntRect(sf::Vector2i(200, 37), m_frameSize));
-		addFrame(sf::IntRect(sf::Vector2i(250, 37), m_frameSize));
-		addFrame(sf::IntRect(sf::Vector2i(300, 37), m_frameSize));
+		m_playerTime = sf::seconds(0.2f);
+		addFrame(sf::IntRect(sf::Vector2i(192, 0), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(0, 61), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(48, 61), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(96, 61), m_frameSize));
 		break;
 	case PlayerState::Jumping:
-		m_playerTime = sf::seconds(0.1f);
-		addFrame(sf::IntRect(sf::Vector2i(0, 74), m_frameSize));
-		addFrame(sf::IntRect(sf::Vector2i(50, 74), m_frameSize));
-		addFrame(sf::IntRect(sf::Vector2i(100, 74), m_frameSize));
-		addFrame(sf::IntRect(sf::Vector2i(150, 74), m_frameSize));
+		m_playerTime = sf::seconds(0.3f);
+		addFrame(sf::IntRect(sf::Vector2i(144, 61), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(192, 61), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(0, 122), m_frameSize));
 		break;
 	case PlayerState::Falling:
 		m_playerTime = sf::seconds(0.15f);
-		addFrame(sf::IntRect(sf::Vector2i(50, 111), m_frameSize));
-		addFrame(sf::IntRect(sf::Vector2i(100, 111), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(48, 122), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(96, 122), m_frameSize));
 		break;
 	case PlayerState::Dashing:
+		m_playerTime = sf::seconds(0.2f);
+		addFrame(sf::IntRect(sf::Vector2i(144, 122), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(192, 122), m_frameSize));
+		break;
+	case PlayerState::Sliding:
+		m_playerTime = sf::seconds(0.2f);
+		addFrame(sf::IntRect(sf::Vector2i(0, 183), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(48, 183), m_frameSize));
+		break;
+	case PlayerState::WallSliding:
+		m_playerTime = sf::seconds(0.2f);
+		addFrame(sf::IntRect(sf::Vector2i(96, 183), m_frameSize));
+		addFrame(sf::IntRect(sf::Vector2i(144, 183), m_frameSize));
 		break;
 	default:
 		break;

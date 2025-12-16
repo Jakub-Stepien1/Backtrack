@@ -12,7 +12,9 @@ enum class PlayerState
 	Running,
 	Jumping,
 	Falling,
-	Dashing
+	Dashing,
+	Sliding,
+	WallSliding
 };
 
 class Player
