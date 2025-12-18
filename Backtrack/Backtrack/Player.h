@@ -43,6 +43,8 @@ public:
 	PlayerState getState();
 
 private:
+	const float SCALE_FACTOR = 2.0f;
+
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;
 

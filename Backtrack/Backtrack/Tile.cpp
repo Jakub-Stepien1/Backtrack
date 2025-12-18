@@ -21,7 +21,7 @@ Tile::~Tile()
 
 void Tile::render(sf::RenderWindow& t_window)
 {
-	//t_window.draw(rectangle);
+	t_window.draw(rectangle);
 	t_window.draw(sprite);
 }
 
@@ -36,80 +36,7 @@ void Tile::setTile(int t_tile, SurroundingTiles t_surrounding)
 	case 1:
 		rectangle.setFillColor(sf::Color::Black);
 
-		// Top Layer
-		if (t_surrounding.left == 0
-			&& t_surrounding.right == 1
-			&& t_surrounding.top == 0
-			&& t_surrounding.bottom == 1)
-		{
-			tileRect = grassTopLeft;
-		}
-
-		if (t_surrounding.left == 1
-			&& t_surrounding.right == 1
-			&& t_surrounding.top == 0
-			&& t_surrounding.bottom == 1)
-		{
-			tileRect = grassTopMiddle;
-		}
-
-		if (t_surrounding.left == 1
-			&& t_surrounding.right == 0
-			&& t_surrounding.top == 0
-			&& t_surrounding.bottom == 1)
-		{
-			tileRect = grassTopRight;
-		}
-
-		// Middle Layer
-		if (t_surrounding.left == 0
-			&& t_surrounding.right == 1
-			&& t_surrounding.top == 1
-			&& t_surrounding.bottom == 1)
-		{
-			tileRect = grassMiddleLeft;
-		}
-
-		if (t_surrounding.left == 1
-			&& t_surrounding.right == 1
-			&& t_surrounding.top == 1
-			&& t_surrounding.bottom == 1)
-		{
-			tileRect = grassMiddleMiddle;
-		}
-
-		if (t_surrounding.left == 1
-			&& t_surrounding.right == 0
-			&& t_surrounding.top == 1
-			&& t_surrounding.bottom == 1)
-		{
-			tileRect = grassMiddleRight;
-		}
-
-		// Bottom Layer
-		if (t_surrounding.left == 0
-			&& t_surrounding.right == 1
-			&& t_surrounding.top == 1
-			&& t_surrounding.bottom == 0)
-		{
-			tileRect = grassBottomLeft;
-		}
-
-		if (t_surrounding.left == 1
-			&& t_surrounding.right == 1
-			&& t_surrounding.top == 1
-			&& t_surrounding.bottom == 0)
-		{
-			tileRect = grassBottomMiddle;
-		}
-
-		if (t_surrounding.left == 1
-			&& t_surrounding.right == 0
-			&& t_surrounding.top == 1
-			&& t_surrounding.bottom == 0)
-		{
-			tileRect = grassBottomRight;
-		}
+		setTextureRect(t_surrounding, t_tile);
 
 		break;
 	default:
@@ -128,4 +55,158 @@ void Tile::setTexture(const sf::Texture& t_texture)
 	texture = t_texture;
 	sprite.setTexture(texture);
 	sprite.setTextureRect(tileRect);
+}
+
+void Tile::setTextureRect(SurroundingTiles t_surrounding, int t_tileType)
+{
+	// Top Layer
+	if (t_surrounding.left == 0
+		&& t_surrounding.right == 1
+		&& t_surrounding.top == 0
+		&& t_surrounding.bottom == 1)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassTopLeft;
+		}
+	}
+
+	if (t_surrounding.left == 1
+		&& t_surrounding.right == 1
+		&& t_surrounding.top == 0
+		&& t_surrounding.bottom == 1)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassTopMiddle;
+		}
+	}
+
+	if (t_surrounding.left == 1
+		&& t_surrounding.right == 0
+		&& t_surrounding.top == 0
+		&& t_surrounding.bottom == 1)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassTopRight;
+		}
+	}
+
+	// Middle Layer
+	if (t_surrounding.left == 0
+		&& t_surrounding.right == 1
+		&& t_surrounding.top == 1
+		&& t_surrounding.bottom == 1)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassMiddleLeft;
+		}
+	}
+
+	if (t_surrounding.left == 1
+		&& t_surrounding.right == 1
+		&& t_surrounding.top == 1
+		&& t_surrounding.bottom == 1)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassMiddleMiddle;
+		}
+	}
+
+	if (t_surrounding.left == 1
+		&& t_surrounding.right == 0
+		&& t_surrounding.top == 1
+		&& t_surrounding.bottom == 1)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassMiddleRight;
+		}
+	}
+
+	// Bottom Layer
+	if (t_surrounding.left == 0
+		&& t_surrounding.right == 1
+		&& t_surrounding.top == 1
+		&& t_surrounding.bottom == 0)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassBottomLeft;
+		}
+	}
+
+	if (t_surrounding.left == 1
+		&& t_surrounding.right == 1
+		&& t_surrounding.top == 1
+		&& t_surrounding.bottom == 0)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassBottomMiddle;
+		}
+	}
+
+	if (t_surrounding.left == 1
+		&& t_surrounding.right == 0
+		&& t_surrounding.top == 1
+		&& t_surrounding.bottom == 0)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassBottomRight;
+		}
+	}
+
+	// Corners
+	if (t_surrounding.left == 1
+		&& t_surrounding.right == 1
+		&& t_surrounding.top == 1
+		&& t_surrounding.bottom == 1
+		&& t_surrounding.bottomLeft == 0)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassCornerTopRight;
+		}
+	}
+
+	if (t_surrounding.left == 1
+		&& t_surrounding.right == 1
+		&& t_surrounding.top == 1
+		&& t_surrounding.bottom == 1
+		&& t_surrounding.bottomRight == 0)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassCornerTopLeft;
+		}
+	}
+
+	if (t_surrounding.left == 1
+		&& t_surrounding.right == 1
+		&& t_surrounding.top == 1
+		&& t_surrounding.bottom == 1
+		&& t_surrounding.topLeft == 0)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassCornerBottomRight;
+		}
+	}
+
+	if (t_surrounding.left == 1
+		&& t_surrounding.right == 1
+		&& t_surrounding.top == 1
+		&& t_surrounding.bottom == 1
+		&& t_surrounding.topRight == 0)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassCornerBottomLeft;
+		}
+	}
 }

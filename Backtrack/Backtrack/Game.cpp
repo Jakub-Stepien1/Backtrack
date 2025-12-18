@@ -11,7 +11,7 @@
 /// load and setup the sounds
 /// </summary>
 Game::Game() :
-	m_window{ sf::VideoMode{ sf::Vector2u{1080U, 720U}, 32U }, "Backtrack" },
+	m_window{ sf::VideoMode{ sf::Vector2u{1368U, 768U}, 32U }, "Backtrack" }, // 1368x768 = 16:9 aspect ratio (38x21 tiles)
 	m_DELETEexitGame{false} //when true game will exit
 {
 	setup(); // load font and sounds
@@ -141,7 +141,7 @@ void Game::render()
 {
 	m_window.clear(sf::Color::White);
 
-	m_window.draw(m_backgroundSprite);
+	//m_window.draw(m_backgroundSprite);
 
 	for (Platform& platform : m_platforms)
 	{
@@ -197,14 +197,6 @@ void Game::setup()
 
 void Game::setupImages()
 {
-	if (!m_DELETElogoTexture.loadFromFile("ASSETS\\IMAGES\\SFML-LOGO.png"))
-	{
-		// simple error message if previous call fails
-		std::cout << "problem loading logo" << std::endl;
-	}
-	m_DELETElogoSprite.setTexture(m_DELETElogoTexture, true);// to reset the dimensions of texture
-	m_DELETElogoSprite.setPosition(sf::Vector2f{ 150.0f, 50.0f });
-
 	if (!m_backgroundTexture.loadFromFile("ASSETS\\IMAGES\\background.png"))
 	{
 		std::cout << "problem loading background" << std::endl;
@@ -233,7 +225,7 @@ void Game::setupGame()
 	{
 		for (int col = 0; col < TILE_COLS; col++)
 		{
-			SurroundingTiles surrounding{0,0,0,0};
+			SurroundingTiles surrounding{ 0,0,0,0,0,0,0,0 };
 			if (col > 0)
 			{
 				surrounding.left = m_grid[row][col - 1];
@@ -249,6 +241,22 @@ void Game::setupGame()
 			if (row < TILE_ROWS - 1)
 			{
 				surrounding.bottom = m_grid[row + 1][col];
+			}
+			if (col > 0 && row > 0)
+			{
+				surrounding.topLeft = m_grid[row - 1][col - 1];
+			}
+			if (col < TILE_COLS - 1 && row > 0)
+			{
+				surrounding.topRight = m_grid[row - 1][col + 1];
+			}
+			if (col > 0 && row < TILE_ROWS - 1)
+			{
+				surrounding.bottomLeft = m_grid[row + 1][col - 1];
+			}
+			if (col < TILE_COLS - 1 && row < TILE_ROWS - 1)
+			{
+				surrounding.bottomRight = m_grid[row + 1][col + 1];
 			}
 
 			m_tiles[row][col].setTile(m_grid[row][col], surrounding);

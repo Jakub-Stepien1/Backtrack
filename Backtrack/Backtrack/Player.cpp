@@ -27,7 +27,7 @@ Player::Player() :
 	m_sprite.setTextureRect(sf::IntRect(sf::Vector2i(0.0f, 0.0f), m_frameSize));
 	m_sprite.setOrigin(sf::Vector2f(48.0f / 2.0f, 61.0f / 2.0f));
 	m_sprite.setPosition(m_spritePosition);
-	m_sprite.setScale(sf::Vector2f(2.0f, 2.0f));
+	m_sprite.setScale(sf::Vector2f(SCALE_FACTOR, SCALE_FACTOR));
 }
 
 Player::~Player()
@@ -65,7 +65,7 @@ void Player::checkInput()
 #pragma region Running
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 	{
-		m_sprite.setScale(sf::Vector2f(-2.0f, 2.0f)); // Flip sprite left
+		m_sprite.setScale(sf::Vector2f(-SCALE_FACTOR, SCALE_FACTOR)); // Flip sprite left
 		m_velocity.x -= 0.5f;
 		if (m_playerState != PlayerState::Jumping 
 			&& m_playerState != PlayerState::Falling)
@@ -75,7 +75,7 @@ void Player::checkInput()
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 	{
-		m_sprite.setScale(sf::Vector2f(2.0f, 2.0f)); // Flip sprite right
+		m_sprite.setScale(sf::Vector2f(SCALE_FACTOR, SCALE_FACTOR)); // Flip sprite right
 		m_velocity.x += 0.5f;
 		if (m_playerState != PlayerState::Jumping 
 			&& m_playerState != PlayerState::Falling)
