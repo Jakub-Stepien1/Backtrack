@@ -44,3 +44,16 @@
 > 2. Make player collision work based on tiles instead.
 > 3. Add a double jump to the player.
 > 4. Add a dash to the player.
+
+# (18/12/25)
+## What was added to the game:
+> 1. Added corner tiles and made a setTextureRect function for the intRects for the tile sprites.
+> 2. Changed screen size to match 16:9 ratio.
+> 3. Removed some unneccessary bits of code and images.
+
+## Need to focus on next:
+> 1. Change fully from platforms to tiles.
+> 2. Make player collision work based on tiles instead.
+> 3. Make levels load tiles from file.
+> 4. Add a double jump to the player.
+> 5. Add a dash to the player.
