@@ -112,20 +112,24 @@ void Game::update(sf::Time t_deltaTime)
 		m_window.close();
 	}
 
-	bool noPlatformCollision = true;
+	bool noTileCollision = true;
 
-	for (Platform& platform : m_platforms)
+	for (int row = 0; row < TILE_ROWS; row++)
 	{
-		platform.activateInRange(m_player.getPosition());
-
-		if (platform.isActive() && m_player.checkGroundCollision(platform))
+		for (int col = 0; col < TILE_COLS; col++)
 		{
-			m_player.calculateGroundLevel(platform);
-			noPlatformCollision = false;
+			if (m_grid[row][col] != 0)
+			{
+				if (m_player.checkGroundCollision(m_tiles[row][col]))
+				{
+					m_player.calculateGroundLevel(m_tiles[row][col]);
+					noTileCollision = false;
+				}
+			}
 		}
 	}
 
-	if (noPlatformCollision)
+	if (noTileCollision)
 	{
 		m_player.setGroundLevel(2000.0f);
 	}
@@ -142,14 +146,6 @@ void Game::render()
 	m_window.clear(sf::Color::White);
 
 	//m_window.draw(m_backgroundSprite);
-
-	for (Platform& platform : m_platforms)
-	{
-		if (platform.isActive())
-		{
-			platform.render(m_window);
-		}
-	}
 
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
@@ -212,15 +208,6 @@ void Game::setupImages()
 
 void Game::setupGame()
 {
-	Platform ground;
-	m_platforms.push_back(ground);
-
-	Platform platform1(sf::Vector2f(200.0f, 20.0f), sf::Vector2f(600.0f, 500.0f));
-	m_platforms.push_back(platform1);
-
-	Platform platform2(sf::Vector2f(200.0f, 20.0f), sf::Vector2f(400.0f, 400.0f));
-	m_platforms.push_back(platform2);
-
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
 		for (int col = 0; col < TILE_COLS; col++)

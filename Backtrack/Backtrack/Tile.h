@@ -27,9 +27,14 @@ public:
 	void setTexture(const sf::Texture& t_texture);
 	void setTextureRect(SurroundingTiles t_surrounding, int t_tileType);
 
+	sf::Vector2f getPosition();
+	sf::RectangleShape getShape();
+
 private:
 
 	const sf::Vector2i TILE_SIZE{ 18, 18 };
+
+	sf::Vector2f position;
 
 	sf::Texture texture;
 
@@ -55,4 +60,7 @@ private:
 	sf::IntRect grassCornerBottomRight{ sf::Vector2i(72, 36), TILE_SIZE };
 	sf::IntRect grassCornerTopLeft{ sf::Vector2i(54, 54), TILE_SIZE };
 	sf::IntRect grassCornerTopRight{ sf::Vector2i(72, 54), TILE_SIZE };
+
+	sf::IntRect grassDiagonalLeft{ sf::Vector2i(72, 90), TILE_SIZE };
+	sf::IntRect grassDiagonalRight{ sf::Vector2i(54, 90), TILE_SIZE };
 };

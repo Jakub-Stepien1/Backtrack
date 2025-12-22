@@ -46,8 +46,10 @@ void Tile::setTile(int t_tile, SurroundingTiles t_surrounding)
 
 void Tile::setPosition(sf::Vector2f t_position)
 {
-	rectangle.setPosition(t_position);
-	sprite.setPosition(t_position);
+	position = t_position;
+
+	rectangle.setPosition(position);
+	sprite.setPosition(position);
 }
 
 void Tile::setTexture(const sf::Texture& t_texture)
@@ -209,4 +211,40 @@ void Tile::setTextureRect(SurroundingTiles t_surrounding, int t_tileType)
 			tileRect = grassCornerBottomLeft;
 		}
 	}
+
+	if (t_surrounding.left == 1
+		&& t_surrounding.right == 1
+		&& t_surrounding.top == 1
+		&& t_surrounding.bottom == 1
+		&& t_surrounding.topRight == 0
+		&& t_surrounding.bottomLeft == 0)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassDiagonalLeft;
+		}
+	}
+
+	if (t_surrounding.left == 1
+		&& t_surrounding.right == 1
+		&& t_surrounding.top == 1
+		&& t_surrounding.bottom == 1
+		&& t_surrounding.topLeft == 0
+		&& t_surrounding.bottomRight == 0)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = grassDiagonalRight;
+		}
+	}
+}
+
+sf::Vector2f Tile::getPosition()
+{
+	return position;
+}
+
+sf::RectangleShape Tile::getShape()
+{
+	return rectangle;
 }

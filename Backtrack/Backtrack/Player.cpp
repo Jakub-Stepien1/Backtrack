@@ -15,7 +15,7 @@ Player::Player() :
 	m_spritePosition = sf::Vector2f(m_position.x + 6.0f, m_position.y - 6.0f);
 	m_speed = 2.0f;
 
-	m_hitbox.setSize(sf::Vector2f(30.0f, 50.0f));
+	m_hitbox.setSize(sf::Vector2f(60.0f, 90.0f));
 	m_hitbox.setOrigin(m_hitbox.getSize() / 2.0f);
 	m_hitbox.setPosition(m_position);
 	m_hitbox.setFillColor(sf::Color::Transparent);
@@ -176,12 +176,12 @@ void Player::checkState()
 	}
 }
 
-bool Player::checkGroundCollision(Platform& t_platform)
+bool Player::checkGroundCollision(Tile& t_tile)
 {
 	sf::Vector2f bottomCenterPlayer = sf::Vector2f(m_position.x, m_position.y + m_hitbox.getSize().y / 2.0f);
 	bottomCenterPlayer += m_velocity;
 
-	if (t_platform.getShape().getGlobalBounds().contains(bottomCenterPlayer))
+	if (t_tile.getShape().getGlobalBounds().contains(bottomCenterPlayer))
 	{
 		return true;
 	}
@@ -191,9 +191,9 @@ bool Player::checkGroundCollision(Platform& t_platform)
 	}
 }
 
-void Player::calculateGroundLevel(Platform& t_platform)
+void Player::calculateGroundLevel(Tile& t_tile)
 {
-	m_groundLevel = t_platform.getPosition().y - t_platform.getShape().getSize().y / 2.0f - m_hitbox.getSize().y / 2.0f;
+	m_groundLevel = t_tile.getPosition().y - m_hitbox.getSize().y / 2.0f;
 }
 
 void Player::setGroundLevel(float t_groundLevel)

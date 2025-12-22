@@ -3,7 +3,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "PlayerState.h"
-#include "Platform.h"
+#include "Tile.h"
 
 enum class PlayerState
 {
@@ -29,8 +29,8 @@ public:
 	void checkInput();
 	void checkState();
 
-	bool checkGroundCollision(Platform& t_platform);
-	void calculateGroundLevel(Platform& t_platform);
+	bool checkGroundCollision(Tile& t_tile);
+	void calculateGroundLevel(Tile& t_tile);
 
 	void setGroundLevel(float t_groundLevel);
 
