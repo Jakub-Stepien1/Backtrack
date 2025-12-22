@@ -57,3 +57,14 @@
 > 3. Make levels load tiles from file.
 > 4. Add a double jump to the player.
 > 5. Add a dash to the player.
+
+# (22/12/25)
+## What was added to the game:
+> 1. Player now collides with the tiles instead of the platforms.
+> 2. Removed platforms from game.
+
+## Need to focus on next:
+> 1. Make levels load tiles from file.
+> 2. Work on more accurate collisions (player stops on either side and bottom so they cant jump through the tiles or walk through them).
+> 3. Add a double jump to the player.
+> 4. Add a dash to the player.
