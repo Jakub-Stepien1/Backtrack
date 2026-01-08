@@ -21,14 +21,14 @@
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Platform.cpp" />
+    <ClCompile Include="MenuButton.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerState.cpp" />
     <ClCompile Include="Tile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Platform.h" />
+    <ClInclude Include="MenuButton.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerState.h" />
     <ClInclude Include="Tile.h" />

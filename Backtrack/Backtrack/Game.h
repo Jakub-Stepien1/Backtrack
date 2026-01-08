@@ -17,6 +17,15 @@
 #include <SFML/Audio.hpp>
 #include "Player.h"
 #include "Tile.h"
+#include "MenuButton.h"
+
+enum Gamestate
+{
+	Menu,
+	Gameplay,
+	Pause,
+	Dialogue
+};
 
 class Game
 {
@@ -33,26 +42,42 @@ private:
 	void update(sf::Time t_deltaTime);
 	void render();
 	
+	void updateMenu(sf::Time t_deltaTime);
+	void updateGameplay(sf::Time t_deltaTime);
+
+	void renderMenu();
+	void renderGameplay();
+
 	void setup();
+	
 	void setupImages();
-	void setupGame();
+	void setupFonts();
+	void setupSounds();
+
+	void setupMenu();
+	void setupGameplay();
 
 	static const int TILE_SCALE = 2;
 	static const int TILE_ROWS = 21;
 	static const int TILE_COLS = 38;
 
-	sf::RenderWindow m_window; // main SFML window
-	sf::Font m_jerseyFont;// font used by message
+	Gamestate m_currentGameState;
+
+	sf::RenderWindow m_window; 
+	sf::Font m_jerseyFont;
 	
 	sf::Text m_DELETEwelcomeMessage{ m_jerseyFont }; // text used for message on screen
 	
 	sf::SoundBuffer m_DELETEsoundBuffer; // buffer for beep sound
 	sf::Sound m_DELETEsound{ m_DELETEsoundBuffer }; // sound object to play
-	bool m_DELETEexitGame; // control exiting game
+
+	MenuButton m_playButton;
+	MenuButton m_optionsButton;
+	MenuButton m_exitButton;
 
 	Player m_player;
 
-	std::vector<Platform> m_platforms;
+	//std::vector<Platform> m_platforms;
 	int m_grid[TILE_ROWS][TILE_COLS] = { {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
 										 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
 										 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },

@@ -68,3 +68,14 @@
 > 2. Work on more accurate collisions (player stops on either side and bottom so they cant jump through the tiles or walk through them).
 > 3. Add a double jump to the player.
 > 4. Add a dash to the player.
+
+# (08/01/26)
+## What was added to the game:
+> 1. Added a menu.
+> 2. Added game states and update and render functions for the gameplay state and menu state rescpectively.
+
+## Need to focus on next:
+> 1. Make levels load tiles from file.
+> 2. Work on more accurate collisions (player stops on either side and bottom so they cant jump through the tiles or walk through them).
+> 3. Add a double jump to the player.
+> 4. Add a dash to the player.
