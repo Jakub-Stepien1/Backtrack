@@ -79,3 +79,14 @@
 > 2. Work on more accurate collisions (player stops on either side and bottom so they cant jump through the tiles or walk through them).
 > 3. Add a double jump to the player.
 > 4. Add a dash to the player.
+
+# (13/01/26)
+## What was added to the game:
+> 1. Added extra rows and columns for tiles offscreen to help match textures around the edges of the screen.
+> 2. Added function load tile grid from a text file. The function looks for a file named "level(x).txt" and loads the data into the grid array.
+
+## Need to focus on next:
+> 1. Make a level editor to easily be able to edit and make new levels and be able to save those level as text files.
+> 2. Work on more accurate collisions (player stops on either side and bottom so they cant jump through the tiles or walk through them).
+> 3. Add a double jump to the player.
+> 4. Add a dash to the player.

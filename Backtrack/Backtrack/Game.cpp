@@ -315,6 +315,8 @@ void Game::setupMenu()
 
 void Game::setupGameplay()
 {
+	loadLevel(1);
+
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
 		for (int col = 0; col < TILE_COLS; col++)
@@ -354,8 +356,27 @@ void Game::setupGameplay()
 			}
 
 			m_tiles[row][col].setTile(m_grid[row][col], surrounding);
-			m_tiles[row][col].setPosition(sf::Vector2f(col * 18 * TILE_SCALE, row * 18 * TILE_SCALE));
+			m_tiles[row][col].setPosition(sf::Vector2f((col - 1) * 18 * TILE_SCALE, (row - 1) * 18 * TILE_SCALE)); // offset by one tile to account for offscreen tiles
 			m_tiles[row][col].setTexture(m_tileSetTexture);
+		}
+	}
+}
+
+void Game::loadLevel(int t_level)
+{
+	std::ifstream file("ASSETS\\LEVELS\\level" + std::to_string(t_level) + ".txt");
+
+	if (!file.is_open())
+	{
+		std::cout << "Error opening level file: ASSETS\\LEVELS\\level" + std::to_string(t_level) + ".txt" << std::endl;
+		return;
+	}
+
+	for (int row = 0; row < TILE_ROWS; row++)
+	{
+		for (int col = 0; col < TILE_COLS; col++)
+		{
+			file >> m_grid[row][col];
 		}
 	}
 }
