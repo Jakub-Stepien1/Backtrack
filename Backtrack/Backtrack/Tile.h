@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "GlobalConstants.h"
 
 struct SurroundingTiles
 {
@@ -24,43 +25,19 @@ public:
 
 	void setTile(int t_tile, SurroundingTiles t_surrounding);
 	void setPosition(sf::Vector2f t_position);
-	void setTexture(const sf::Texture& t_texture);
+	void setTexture(sf::Texture& t_texture);
 	void setTextureRect(SurroundingTiles t_surrounding, int t_tileType);
 
 	sf::Vector2f getPosition();
 	sf::RectangleShape getShape();
 
 private:
-
-	const sf::Vector2i TILE_SIZE{ 18, 18 };
-
 	sf::Vector2f position;
 
 	sf::Texture texture;
-
-	sf::IntRect tileRect;
 	sf::Sprite sprite{ texture };
 
+	sf::IntRect tileRect;
+
 	sf::RectangleShape rectangle;
-
-	// Tile texture rectangles
-	sf::IntRect grassTopLeft{ sf::Vector2i(0, 54), TILE_SIZE };
-	sf::IntRect grassTopMiddle{ sf::Vector2i(18, 54), TILE_SIZE };
-	sf::IntRect grassTopRight{ sf::Vector2i(36, 54), TILE_SIZE };
-
-	sf::IntRect grassMiddleLeft{ sf::Vector2i(0, 72), TILE_SIZE };
-	sf::IntRect grassMiddleMiddle{ sf::Vector2i(18, 72), TILE_SIZE };
-	sf::IntRect grassMiddleRight{ sf::Vector2i(36, 72), TILE_SIZE };
-	
-	sf::IntRect grassBottomLeft{ sf::Vector2i(0, 90), TILE_SIZE };
-	sf::IntRect grassBottomMiddle{ sf::Vector2i(18, 90), TILE_SIZE };
-	sf::IntRect grassBottomRight{ sf::Vector2i(36, 90), TILE_SIZE };
-
-	sf::IntRect grassCornerBottomLeft{ sf::Vector2i(54, 36), TILE_SIZE };
-	sf::IntRect grassCornerBottomRight{ sf::Vector2i(72, 36), TILE_SIZE };
-	sf::IntRect grassCornerTopLeft{ sf::Vector2i(54, 54), TILE_SIZE };
-	sf::IntRect grassCornerTopRight{ sf::Vector2i(72, 54), TILE_SIZE };
-
-	sf::IntRect grassDiagonalLeft{ sf::Vector2i(72, 90), TILE_SIZE };
-	sf::IntRect grassDiagonalRight{ sf::Vector2i(54, 90), TILE_SIZE };
 };

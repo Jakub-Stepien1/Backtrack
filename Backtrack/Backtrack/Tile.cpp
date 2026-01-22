@@ -21,26 +21,21 @@ Tile::~Tile()
 
 void Tile::render(sf::RenderWindow& t_window)
 {
-	t_window.draw(rectangle);
+	//t_window.draw(rectangle);
 	t_window.draw(sprite);
 }
 
 void Tile::setTile(int t_tile, SurroundingTiles t_surrounding)
 {
-	switch (t_tile)
+	if (t_tile == 0)
 	{
-	case 0:
 		rectangle.setFillColor(sf::Color::Transparent);
 		tileRect = sf::IntRect(sf::Vector2i(54, 90), sf::Vector2i(18, 18));
-		break;
-	case 1:
+	}
+	else
+	{
 		rectangle.setFillColor(sf::Color::Black);
-
 		setTextureRect(t_surrounding, t_tile);
-
-		break;
-	default:
-		break;
 	}
 }
 
@@ -52,7 +47,7 @@ void Tile::setPosition(sf::Vector2f t_position)
 	sprite.setPosition(position);
 }
 
-void Tile::setTexture(const sf::Texture& t_texture)
+void Tile::setTexture(sf::Texture& t_texture)
 {
 	texture = t_texture;
 	sprite.setTexture(texture);
@@ -63,179 +58,239 @@ void Tile::setTextureRect(SurroundingTiles t_surrounding, int t_tileType)
 {
 	// Top Layer
 	if (t_surrounding.left == 0
-		&& t_surrounding.right == 1
+		&& t_surrounding.right == t_tileType
 		&& t_surrounding.top == 0
-		&& t_surrounding.bottom == 1)
+		&& t_surrounding.bottom == t_tileType)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassTopLeft;
+			tileRect = GRASS_TOP_LEFT;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_TOP_LEFT;
 		}
 	}
 
-	if (t_surrounding.left == 1
-		&& t_surrounding.right == 1
+	if (t_surrounding.left == t_tileType
+		&& t_surrounding.right == t_tileType
 		&& t_surrounding.top == 0
-		&& t_surrounding.bottom == 1)
+		&& t_surrounding.bottom == t_tileType)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassTopMiddle;
+			tileRect = GRASS_TOP_MIDDLE;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_TOP_MIDDLE;
 		}
 	}
 
-	if (t_surrounding.left == 1
+	if (t_surrounding.left == t_tileType
 		&& t_surrounding.right == 0
 		&& t_surrounding.top == 0
-		&& t_surrounding.bottom == 1)
+		&& t_surrounding.bottom == t_tileType)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassTopRight;
+			tileRect = GRASS_TOP_RIGHT;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_TOP_RIGHT;
 		}
 	}
 
 	// Middle Layer
 	if (t_surrounding.left == 0
-		&& t_surrounding.right == 1
-		&& t_surrounding.top == 1
-		&& t_surrounding.bottom == 1)
+		&& t_surrounding.right == t_tileType
+		&& t_surrounding.top == t_tileType
+		&& t_surrounding.bottom == t_tileType)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassMiddleLeft;
+			tileRect = GRASS_MIDDLE_LEFT;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_MIDDLE_LEFT;
 		}
 	}
 
-	if (t_surrounding.left == 1
-		&& t_surrounding.right == 1
-		&& t_surrounding.top == 1
-		&& t_surrounding.bottom == 1)
+	if (t_surrounding.left == t_tileType
+		&& t_surrounding.right == t_tileType
+		&& t_surrounding.top == t_tileType
+		&& t_surrounding.bottom == t_tileType)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassMiddleMiddle;
+			tileRect = GRASS_MIDDLE_MIDDLE;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_MIDDLE_MIDDLE;
 		}
 	}
 
-	if (t_surrounding.left == 1
+	if (t_surrounding.left == t_tileType
 		&& t_surrounding.right == 0
-		&& t_surrounding.top == 1
-		&& t_surrounding.bottom == 1)
+		&& t_surrounding.top == t_tileType
+		&& t_surrounding.bottom == t_tileType)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassMiddleRight;
+			tileRect = GRASS_MIDDLE_RIGHT;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_MIDDLE_RIGHT;
 		}
 	}
 
 	// Bottom Layer
 	if (t_surrounding.left == 0
-		&& t_surrounding.right == 1
-		&& t_surrounding.top == 1
+		&& t_surrounding.right == t_tileType
+		&& t_surrounding.top == t_tileType
 		&& t_surrounding.bottom == 0)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassBottomLeft;
+			tileRect = GRASS_BOTTOM_LEFT;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_BOTTOM_LEFT;
 		}
 	}
 
-	if (t_surrounding.left == 1
-		&& t_surrounding.right == 1
-		&& t_surrounding.top == 1
+	if (t_surrounding.left == t_tileType
+		&& t_surrounding.right == t_tileType
+		&& t_surrounding.top == t_tileType
 		&& t_surrounding.bottom == 0)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassBottomMiddle;
+			tileRect = GRASS_BOTTOM_MIDDLE;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_BOTTOM_MIDDLE;
 		}
 	}
 
-	if (t_surrounding.left == 1
+	if (t_surrounding.left == t_tileType
 		&& t_surrounding.right == 0
-		&& t_surrounding.top == 1
+		&& t_surrounding.top == t_tileType
 		&& t_surrounding.bottom == 0)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassBottomRight;
+			tileRect = GRASS_BOTTOM_RIGHT;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_BOTTOM_RIGHT;
 		}
 	}
 
 	// Corners
-	if (t_surrounding.left == 1
-		&& t_surrounding.right == 1
-		&& t_surrounding.top == 1
-		&& t_surrounding.bottom == 1
+	if (t_surrounding.left == t_tileType
+		&& t_surrounding.right == t_tileType
+		&& t_surrounding.top == t_tileType
+		&& t_surrounding.bottom == t_tileType
 		&& t_surrounding.bottomLeft == 0)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassCornerTopRight;
+			tileRect = GRASS_CORNER_TOP_RIGHT;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_CORNER_TOP_RIGHT;
 		}
 	}
 
-	if (t_surrounding.left == 1
-		&& t_surrounding.right == 1
-		&& t_surrounding.top == 1
-		&& t_surrounding.bottom == 1
+	if (t_surrounding.left == t_tileType
+		&& t_surrounding.right == t_tileType
+		&& t_surrounding.top == t_tileType
+		&& t_surrounding.bottom == t_tileType
 		&& t_surrounding.bottomRight == 0)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassCornerTopLeft;
+			tileRect = GRASS_CORNER_TOP_LEFT;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_CORNER_TOP_LEFT;
 		}
 	}
 
-	if (t_surrounding.left == 1
-		&& t_surrounding.right == 1
-		&& t_surrounding.top == 1
-		&& t_surrounding.bottom == 1
+	if (t_surrounding.left == t_tileType
+		&& t_surrounding.right == t_tileType
+		&& t_surrounding.top == t_tileType
+		&& t_surrounding.bottom == t_tileType
 		&& t_surrounding.topLeft == 0)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassCornerBottomRight;
+			tileRect = GRASS_CORNER_BOTTOM_RIGHT;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_CORNER_BOTTOM_RIGHT;
 		}
 	}
 
-	if (t_surrounding.left == 1
-		&& t_surrounding.right == 1
-		&& t_surrounding.top == 1
-		&& t_surrounding.bottom == 1
+	if (t_surrounding.left == t_tileType
+		&& t_surrounding.right == t_tileType
+		&& t_surrounding.top == t_tileType
+		&& t_surrounding.bottom == t_tileType
 		&& t_surrounding.topRight == 0)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassCornerBottomLeft;
+			tileRect = GRASS_CORNER_BOTTOM_LEFT;
+		}
+		else if (t_tileType == 2)
+		{
+			tileRect = BRICK_CORNER_BOTTOM_LEFT;
 		}
 	}
 
-	if (t_surrounding.left == 1
-		&& t_surrounding.right == 1
-		&& t_surrounding.top == 1
-		&& t_surrounding.bottom == 1
+	if (t_surrounding.left == t_tileType
+		&& t_surrounding.right == t_tileType
+		&& t_surrounding.top == t_tileType
+		&& t_surrounding.bottom == t_tileType
 		&& t_surrounding.topRight == 0
 		&& t_surrounding.bottomLeft == 0)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassDiagonalLeft;
+			tileRect = GRASS_DIAGONAL_LEFT;
 		}
+		/*else if (t_tileType == 2)
+		{
+			tileRect = BRICK_DIAGONAL_LEFT;
+		}*/
 	}
 
-	if (t_surrounding.left == 1
-		&& t_surrounding.right == 1
-		&& t_surrounding.top == 1
-		&& t_surrounding.bottom == 1
+	if (t_surrounding.left == t_tileType
+		&& t_surrounding.right == t_tileType
+		&& t_surrounding.top == t_tileType
+		&& t_surrounding.bottom == t_tileType
 		&& t_surrounding.topLeft == 0
 		&& t_surrounding.bottomRight == 0)
 	{
 		if (t_tileType == 1)
 		{
-			tileRect = grassDiagonalRight;
+			tileRect = GRASS_DIAGONAL_RIGHT;
 		}
+		/*else if (t_tileType == 2)
+		{
+			tileRect = BRICK_DIAGONAL_RIGHT;
+		}*/
 	}
 }
 

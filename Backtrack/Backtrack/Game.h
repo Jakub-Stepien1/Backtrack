@@ -13,7 +13,6 @@
 /// same as #pragma once
 /// Don't forget the #endif at the bottom
 /// </summary>
-#include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "Player.h"
 #include "Tile.h"
@@ -61,10 +60,6 @@ private:
 
 	void loadLevel(int t_level);
 
-	static const int TILE_SCALE = 2;
-	static const int TILE_ROWS = 23; // 21 + 2 offscreen
-	static const int TILE_COLS = 40; // 38 + 2 offscreen
-
 	Gamestate m_currentGameState;
 
 	sf::RenderWindow m_window; 
@@ -81,7 +76,6 @@ private:
 
 	Player m_player;
 
-	//std::vector<Platform> m_platforms;
 	int m_grid[TILE_ROWS][TILE_COLS] = { {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
 										 {0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0 },
 										 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
