@@ -7,7 +7,7 @@ Tile::Tile()
 	tileRect = sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(18, 18));
 
 	rectangle.setFillColor(sf::Color::Transparent);
-	rectangle.setOutlineColor(sf::Color::Black);
+	rectangle.setOutlineColor(sf::Color(100,100,100));
 	rectangle.setSize(sf::Vector2f(18.0f * 2, 18.0f * 2));
 
 	sprite.setScale(sf::Vector2f(2.0f, 2.0f));

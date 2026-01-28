@@ -1,14 +1,14 @@
 #include "MenuButton.h"
 
-MenuButton::MenuButton()
+MenuButton::MenuButton() : font{ nullptr }
 {
 	position = sf::Vector2f(200.0f, 50.0f);
 
 	text.setFont(*font);
-	text.setCharacterSize(48);
+	text.setCharacterSize(64);
 	text.setFillColor(sf::Color::White);
-	text.setOutlineColor(sf::Color::Black);
-	text.setOutlineThickness(2.0f);
+	text.setOutlineColor(sf::Color::White);
+	text.setOutlineThickness(1.0f);
 	text.setPosition(position);
 
 	rect.setSize(sf::Vector2f(400.0f, 100.0f));
@@ -40,7 +40,9 @@ void MenuButton::setPosition(const sf::Vector2f t_position)
 void MenuButton::setText(const std::string t_string)
 {
 	text.setString(t_string);
-	text.setOrigin(text.getLocalBounds().getCenter());
+	text.setOrigin(sf::Vector2f(0, text.getLocalBounds().getCenter().y));
+	rect.setSize(sf::Vector2f(text.getLocalBounds().size.x + 100.0f, text.getLocalBounds().size.y + 10.0f));
+	rect.setOrigin(sf::Vector2f(50, rect.getSize().y / 2.0f));
 }
 
 std::string MenuButton::getText()
@@ -64,9 +66,10 @@ void MenuButton::hover()
 	
 	if (rect.getScale().x < scaleFactor)
 	{
-		rect.setFillColor(sf::Color(210, 210, 210));
-
 		rect.scale(sf::Vector2f(1.02f, 1.02f));
+
+		text.setOutlineColor(sf::Color::Black);
+		text.setOutlineThickness(3.0f);
 		text.scale(sf::Vector2f(1.02f, 1.02f));
 	}
 }
@@ -77,15 +80,16 @@ void MenuButton::unhover()
 
 	if (rect.getScale().x > scaleFactor)
 	{
-		rect.setFillColor(sf::Color::White);
-
 		rect.scale(sf::Vector2f(0.99f, 0.99f));
+
+		text.setOutlineColor(sf::Color::White);
+		text.setOutlineThickness(1.0f);
 		text.scale(sf::Vector2f(0.99f, 0.99f));
 	}
 }
 
 void MenuButton::render(sf::RenderWindow& t_window)
 {
-	t_window.draw(rect);
+	//t_window.draw(rect);
 	t_window.draw(text);
 }

@@ -12,7 +12,7 @@
 /// </summary>
 Game::Game() :
 	m_window{ sf::VideoMode{ sf::Vector2u{1368U, 768U}, 32U }, "Backtrack" }, // 1368x768 = 16:9 aspect ratio (38x21 tiles)
-	m_currentGameState{ Gamestate::Menu }
+	m_currentGameState{ Gamestate::TitleScreen }
 {
 	setup(); // load all resources and game data
 }
@@ -59,7 +59,6 @@ void Game::run()
 /// </summary>
 void Game::processEvents()
 {
-	
 	while (const std::optional newEvent = m_window.pollEvent())
 	{
 		if ( newEvent->is<sf::Event::Closed>()) // close window message 
@@ -85,14 +84,8 @@ void Game::processKeys(const std::optional<sf::Event> t_event)
 	{
 		m_currentGameState = Gamestate::Menu;
 	}
-}
 
-/// <summary>
-/// Check if any keys are currently pressed
-/// </summary>
-void Game::checkKeyboardState()
-{
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
+	if (m_currentGameState == TitleScreen)
 	{
 		m_currentGameState = Gamestate::Menu;
 	}
@@ -104,10 +97,11 @@ void Game::checkKeyboardState()
 /// <param name="t_deltaTime">time interval per frame</param>
 void Game::update(sf::Time t_deltaTime)
 {
-	checkKeyboardState();
-
 	switch (m_currentGameState)	
 	{
+	case TitleScreen:
+		updateTitleScreen(t_deltaTime);
+		break;
 	case Menu:
 		updateMenu(t_deltaTime);
 		break;
@@ -133,10 +127,11 @@ void Game::render()
 {
 	m_window.clear(sf::Color::White);
 
-	//m_window.draw(m_backgroundSprite);
-
 	switch (m_currentGameState)
 	{
+	case TitleScreen:
+		renderTitleScreen();
+		break;
 	case Menu:
 		renderMenu();
 		break;
@@ -155,6 +150,20 @@ void Game::render()
 	}
 	
 	m_window.display();
+}
+
+void Game::updateTitleScreen(sf::Time t_deltaTime)
+{
+	if (m_titleScreenText.getPosition().y > 703.0f)
+	{
+		m_textVel = sf::Vector2f(0.0f, -10.0f * t_deltaTime.asSeconds());
+	}
+	else if (m_titleScreenText.getPosition().y < 697.0f)
+	{
+		m_textVel = sf::Vector2f(0.0f, 10.0f * t_deltaTime.asSeconds());
+	}
+	m_titleScreenText.move(m_textVel);
+	m_logoSprite.move(m_textVel);
 }
 
 void Game::updateMenu(sf::Time t_deltaTime)
@@ -207,15 +216,30 @@ void Game::updateMenu(sf::Time t_deltaTime)
 			button.unhover();
 		}
 	}
+
+	if (m_logoSprite.getPosition().y > 253.0f)
+	{
+		m_textVel = sf::Vector2f(0.0f, -10.0f * t_deltaTime.asSeconds());
+	}
+	else if (m_logoSprite.getPosition().y < 247.0f)
+	{
+		m_textVel = sf::Vector2f(0.0f, 10.0f * t_deltaTime.asSeconds());
+	}
+
+	m_logoSprite.move(m_textVel);
 }
 
 void Game::updateLevelEditor(sf::Time t_deltaTime)
 {
 	sf::Vector2i mousePosition = sf::Mouse::getPosition(m_window);
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num0))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1))
 	{
-
+		selectedTile = 1;
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num2))
+	{
+		selectedTile = 2;
 	}
 
 	for (int row = 0; row < TILE_ROWS; row++)
@@ -226,9 +250,9 @@ void Game::updateLevelEditor(sf::Time t_deltaTime)
 			{
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
 				{
-					m_grid[row][col] = 1;
+					m_grid[row][col] = selectedTile;
 					SurroundingTiles surrounding = getSurroundingTiles(row, col);
-					m_tiles[row][col].setTile(1, surrounding);
+					m_tiles[row][col].setTile(selectedTile, surrounding);
 				}
 				else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
 				{
@@ -275,8 +299,18 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 	m_player.update();
 }
 
+void Game::renderTitleScreen()
+{
+	m_window.draw(m_titleScreenSprite);
+	m_window.draw(m_logoSprite);
+	m_window.draw(m_titleScreenText);
+}
+
 void Game::renderMenu()
 {
+	m_window.draw(m_menuBackgroundSprite);
+	m_window.draw(m_logoSprite);
+
 	for (MenuButton& button : m_menuButtons)
 	{
 		button.render(m_window);
@@ -296,6 +330,8 @@ void Game::renderLevelEditor()
 
 void Game::renderGameplay()
 {
+	//m_window.draw(m_backgroundSprite);
+
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
 		for (int col = 0; col < TILE_COLS; col++)
@@ -326,32 +362,57 @@ void Game::setup()
 
 void Game::setupImages()
 {
+	if (!m_titleScreenTexture.loadFromFile("ASSETS\\IMAGES\\background-title.png"))
+	{
+		std::cout << "problem loading title screen background" << std::endl;
+	}
+	m_titleScreenSprite.setTexture(m_titleScreenTexture, true);
+	m_titleScreenSprite.setScale(sf::Vector2f(0.5f, 0.5f));
+
+	if (!m_logoTexture.loadFromFile("ASSETS\\IMAGES\\logo-title.png"))
+	{
+		std::cout << "problem loading menu logo image" << std::endl;
+	}
+	m_logoSprite.setTexture(m_logoTexture, true);
+	m_logoSprite.setScale(sf::Vector2f(0.5f, 0.5f));
+	m_logoSprite.setPosition(sf::Vector2f(500.0f, 250.0f));
+	m_logoSprite.setOrigin(m_logoSprite.getGlobalBounds().getCenter());
+
+	if (!m_menuBackgroundTexture.loadFromFile("ASSETS\\IMAGES\\background-menu.png"))
+	{
+		std::cout << "problem loading menu background" << std::endl;
+	}
+	m_menuBackgroundSprite.setTexture(m_menuBackgroundTexture, true);
+
+	if (!m_tileSetTexture.loadFromFile("ASSETS\\IMAGES\\terrain18px-sheet.png"))
+	{
+		std::cout << "problem loading tileset" << std::endl;
+	}
+
 	if (!m_backgroundTexture.loadFromFile("ASSETS\\IMAGES\\background.png"))
 	{
 		std::cout << "problem loading background" << std::endl;
 	}
 	m_backgroundSprite.setTexture(m_backgroundTexture, true);
 	m_backgroundSprite.setScale(sf::Vector2f(1.2f, 1.6f));
-
-	if (!m_tileSetTexture.loadFromFile("ASSETS\\IMAGES\\terrain18px-sheet.png"))
-	{
-		std::cout << "problem loading tileset" << std::endl;
-	}
 }
 
 void Game::setupFonts()
 {
-	if (!m_jerseyFont.openFromFile("ASSETS\\FONTS\\Jersey20-Regular.ttf"))
+	if (!m_backtrackFont.openFromFile("ASSETS\\FONTS\\Backtrack-Regular-font.ttf"))
 	{
-		std::cout << "problem loading arial black font" << std::endl;
+		std::cout << "problem loading backtrack font" << std::endl;
 	}
-	m_DELETEwelcomeMessage.setFont(m_jerseyFont);
-	m_DELETEwelcomeMessage.setString("SFML Game");
-	m_DELETEwelcomeMessage.setPosition(sf::Vector2f{ 205.0f, 240.0f });
-	m_DELETEwelcomeMessage.setCharacterSize(96U);
-	m_DELETEwelcomeMessage.setOutlineColor(sf::Color::Black);
-	m_DELETEwelcomeMessage.setFillColor(sf::Color::Red);
-	m_DELETEwelcomeMessage.setOutlineThickness(2.0f);
+	m_titleScreenText.setFont(m_backtrackFont);
+	m_titleScreenText.setCharacterSize(48U);
+	m_titleScreenText.setString("Press any key to start!");
+	m_titleScreenText.setOrigin(m_titleScreenText.getLocalBounds().getCenter());
+	m_titleScreenText.setPosition(sf::Vector2f{ 684.0f, 700.0f });
+	m_titleScreenText.setOutlineColor(sf::Color::White);
+	m_titleScreenText.setOutlineThickness(0.7f);
+	m_titleScreenText.setFillColor(sf::Color::White);
+
+	m_textVel = sf::Vector2f(0.0f, 3.0f);
 }
 
 void Game::setupSounds()
@@ -365,11 +426,13 @@ void Game::setupSounds()
 
 void Game::setupMenu()
 {
+	selectedTile = 0;
+
 	for (int i = 0; i < 4; i++)
 	{
 		MenuButton newButton;
-		newButton.setFont(m_jerseyFont);
-		newButton.setPosition(sf::Vector2f(684.0f, 200.0f + 150 * i ));
+		newButton.setFont(m_backtrackFont);
+		newButton.setPosition(sf::Vector2f(200.0f, 400.0f + 80 * i ));
 		if (i == 0)
 		{
 			newButton.setText("Play");

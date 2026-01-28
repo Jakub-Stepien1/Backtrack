@@ -22,6 +22,7 @@
 
 enum Gamestate
 {
+	TitleScreen,
 	Menu,
 	LevelEditor,
 	Gameplay,
@@ -40,14 +41,15 @@ private:
 
 	void processEvents();
 	void processKeys(const std::optional<sf::Event> t_event);
-	void checkKeyboardState();
 	void update(sf::Time t_deltaTime);
 	void render();
 	
+	void updateTitleScreen(sf::Time t_deltaTime);
 	void updateMenu(sf::Time t_deltaTime);
 	void updateLevelEditor(sf::Time t_deltaTime);
 	void updateGameplay(sf::Time t_deltaTime);
 
+	void renderTitleScreen();
 	void renderMenu();
 	void renderLevelEditor();
 	void renderGameplay();
@@ -68,9 +70,7 @@ private:
 	Gamestate m_currentGameState;
 
 	sf::RenderWindow m_window; 
-	sf::Font m_jerseyFont;
-	
-	sf::Text m_DELETEwelcomeMessage{ m_jerseyFont }; // text used for message on screen
+	sf::Font m_backtrackFont;
 	
 	sf::SoundBuffer m_DELETEsoundBuffer; // buffer for beep sound
 	sf::Sound m_DELETEsound{ m_DELETEsoundBuffer }; // sound object to play
@@ -105,7 +105,22 @@ private:
 
 	Tile m_tiles[TILE_ROWS][TILE_COLS];
 
+	int selectedTile;
+
 	sf::Texture m_tileSetTexture;
+	
+	sf::Texture m_logoTexture;
+	sf::Sprite m_logoSprite{ m_logoTexture };
+
+	sf::Texture m_titleScreenTexture;
+	sf::Sprite m_titleScreenSprite{ m_titleScreenTexture };
+	sf::Text m_titleScreenText{ m_backtrackFont };
+
+	sf::Vector2f m_textVel;
+	
+	sf::Texture m_menuBackgroundTexture;
+	sf::Sprite m_menuBackgroundSprite{ m_menuBackgroundTexture };
+
 	sf::Texture m_backgroundTexture;
 	sf::Sprite m_backgroundSprite{m_backgroundTexture};
 
