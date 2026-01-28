@@ -7,11 +7,13 @@ Tile::Tile()
 	tileRect = sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(18, 18));
 
 	rectangle.setFillColor(sf::Color::Transparent);
-	//rectangle.setOutlineColor(sf::Color::Black);
-	//rectangle.setOutlineThickness(2.0f);
+	rectangle.setOutlineColor(sf::Color::Black);
 	rectangle.setSize(sf::Vector2f(18.0f * 2, 18.0f * 2));
 
 	sprite.setScale(sf::Vector2f(2.0f, 2.0f));
+
+	outlineVisible = false;
+	empty = true;
 }
 
 Tile::~Tile()
@@ -21,21 +23,29 @@ Tile::~Tile()
 
 void Tile::render(sf::RenderWindow& t_window)
 {
-	//t_window.draw(rectangle);
-	t_window.draw(sprite);
+	if (outlineVisible)
+	{
+		t_window.draw(rectangle);
+	}
+	if (!empty)
+	{
+		t_window.draw(sprite);
+	}
 }
 
 void Tile::setTile(int t_tile, SurroundingTiles t_surrounding)
 {
 	if (t_tile == 0)
 	{
-		rectangle.setFillColor(sf::Color::Transparent);
-		tileRect = sf::IntRect(sf::Vector2i(54, 90), sf::Vector2i(18, 18));
+		//rectangle.setFillColor(sf::Color::Transparent);
+		tileRect = sf::IntRect(sf::Vector2i(90, 0), sf::Vector2i(18, 18));
+		empty = true;
 	}
 	else
 	{
-		rectangle.setFillColor(sf::Color::Black);
+		//rectangle.setFillColor(sf::Color::Black);
 		setTextureRect(t_surrounding, t_tile);
+		empty = false;
 	}
 }
 
@@ -291,6 +301,32 @@ void Tile::setTextureRect(SurroundingTiles t_surrounding, int t_tileType)
 		{
 			tileRect = BRICK_DIAGONAL_RIGHT;
 		}*/
+	}
+
+	sprite.setTextureRect(tileRect);
+}
+
+bool Tile::isMouseOver(sf::Vector2i t_mousePos)
+{
+	sf::Vector2f mousePos = static_cast<sf::Vector2f>(t_mousePos);
+	if (rectangle.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+	{
+		return true;
+	}
+	return false;
+}
+
+void Tile::showOutline(bool t_show)
+{
+	if (t_show)
+	{
+		outlineVisible = true;
+		rectangle.setOutlineThickness(1.0f);
+	}
+	else
+	{
+		outlineVisible = false;
+		rectangle.setOutlineThickness(0.0f);
 	}
 }
 

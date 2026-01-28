@@ -23,6 +23,7 @@
 enum Gamestate
 {
 	Menu,
+	LevelEditor,
 	Gameplay,
 	Pause,
 	Dialogue
@@ -44,9 +45,11 @@ private:
 	void render();
 	
 	void updateMenu(sf::Time t_deltaTime);
+	void updateLevelEditor(sf::Time t_deltaTime);
 	void updateGameplay(sf::Time t_deltaTime);
 
 	void renderMenu();
+	void renderLevelEditor();
 	void renderGameplay();
 
 	void setup();
@@ -57,6 +60,8 @@ private:
 
 	void setupMenu();
 	void setupGameplay();
+
+	SurroundingTiles getSurroundingTiles(int t_row, int t_col);
 
 	void loadLevel(int t_level);
 
@@ -70,9 +75,7 @@ private:
 	sf::SoundBuffer m_DELETEsoundBuffer; // buffer for beep sound
 	sf::Sound m_DELETEsound{ m_DELETEsoundBuffer }; // sound object to play
 
-	MenuButton m_playButton;
-	MenuButton m_optionsButton;
-	MenuButton m_exitButton;
+	std::vector<MenuButton> m_menuButtons;
 
 	Player m_player;
 

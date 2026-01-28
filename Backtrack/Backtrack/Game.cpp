@@ -83,7 +83,7 @@ void Game::processKeys(const std::optional<sf::Event> t_event)
 	const sf::Event::KeyPressed *newKeypress = t_event->getIf<sf::Event::KeyPressed>();
 	if (sf::Keyboard::Key::Escape == newKeypress->code)
 	{
-		m_window.close();
+		m_currentGameState = Gamestate::Menu;
 	}
 }
 
@@ -94,7 +94,7 @@ void Game::checkKeyboardState()
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
 	{
-		m_window.close();
+		m_currentGameState = Gamestate::Menu;
 	}
 }
 
@@ -110,6 +110,9 @@ void Game::update(sf::Time t_deltaTime)
 	{
 	case Menu:
 		updateMenu(t_deltaTime);
+		break;
+	case LevelEditor:
+		updateLevelEditor(t_deltaTime);
 		break;
 	case Gameplay:
 		updateGameplay(t_deltaTime);
@@ -137,6 +140,9 @@ void Game::render()
 	case Menu:
 		renderMenu();
 		break;
+	case LevelEditor:
+		renderLevelEditor();
+		break;
 	case Gameplay:
 		renderGameplay();
 		break;
@@ -155,44 +161,91 @@ void Game::updateMenu(sf::Time t_deltaTime)
 {
 	sf::Vector2i mousePosition = sf::Mouse::getPosition(m_window);
 	
-	if (m_playButton.isMouseOver(mousePosition))
+	for (MenuButton& button : m_menuButtons)
 	{
-		m_playButton.hover();
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+		if (button.isMouseOver(mousePosition))
 		{
-			m_currentGameState = Gamestate::Gameplay;
+			button.hover();
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+			{
+				if (button.getText() == "Play")
+				{
+					for (int row = 0; row < TILE_ROWS; row++)
+					{
+						for (int col = 0; col < TILE_COLS; col++)
+						{
+							m_tiles[row][col].showOutline(false);
+						}
+					}
+
+					m_currentGameState = Gamestate::Gameplay;
+				}
+				else if (button.getText() == "Level Editor")
+				{
+					for (int row = 0; row < TILE_ROWS; row++)
+					{
+						for (int col = 0; col < TILE_COLS; col++)
+						{
+							m_tiles[row][col].showOutline(true);
+						}
+					}
+
+					m_currentGameState = Gamestate::LevelEditor;
+				}
+				else if (button.getText() == "Options")
+				{
+					// Open options menu
+				}
+				else if (button.getText() == "Exit")
+				{
+					m_window.close();
+				}
+			}
+		}
+		else
+		{
+			button.unhover();
 		}
 	}
-	else
+}
+
+void Game::updateLevelEditor(sf::Time t_deltaTime)
+{
+	sf::Vector2i mousePosition = sf::Mouse::getPosition(m_window);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num0))
 	{
-		m_playButton.unhover();
+
 	}
 
-	if (m_optionsButton.isMouseOver(mousePosition))
+	for (int row = 0; row < TILE_ROWS; row++)
 	{
-		m_optionsButton.hover();
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+		for (int col = 0; col < TILE_COLS; col++)
 		{
-			// Open options menu
-		}
-	}
-	else
-	{
-		m_optionsButton.unhover();
-	}
+			if (m_tiles[row][col].isMouseOver(mousePosition))
+			{
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+				{
+					m_grid[row][col] = 1;
+					SurroundingTiles surrounding = getSurroundingTiles(row, col);
+					m_tiles[row][col].setTile(1, surrounding);
+				}
+				else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+				{
+					m_grid[row][col] = 0;
+					SurroundingTiles surrounding = getSurroundingTiles(row, col);
+					m_tiles[row][col].setTile(0, surrounding);
+				}
+			}
 
-	if (m_exitButton.isMouseOver(mousePosition))
-	{
-		m_exitButton.hover();
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
-		{
-			m_window.close();
+			if (m_grid[row][col] != 0)
+			{
+				SurroundingTiles surrounding = getSurroundingTiles(row, col);
+				m_tiles[row][col].setTile(m_grid[row][col], surrounding);
+			}
 		}
 	}
-	else
-	{
-		m_exitButton.unhover();
-	}
+	
 }
 
 void Game::updateGameplay(sf::Time t_deltaTime)
@@ -224,9 +277,21 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 
 void Game::renderMenu()
 {
-	m_playButton.render(m_window);
-	m_optionsButton.render(m_window);
-	m_exitButton.render(m_window);
+	for (MenuButton& button : m_menuButtons)
+	{
+		button.render(m_window);
+	}
+}
+
+void Game::renderLevelEditor()
+{
+	for (int row = 0; row < TILE_ROWS; row++)
+	{
+		for (int col = 0; col < TILE_COLS; col++)
+		{
+			m_tiles[row][col].render(m_window);
+		}
+	}
 }
 
 void Game::renderGameplay()
@@ -300,17 +365,30 @@ void Game::setupSounds()
 
 void Game::setupMenu()
 {
-	m_playButton.setFont(m_jerseyFont);
-	m_playButton.setPosition(sf::Vector2f(684.0f, 250.0f));
-	m_playButton.setText("Play");
+	for (int i = 0; i < 4; i++)
+	{
+		MenuButton newButton;
+		newButton.setFont(m_jerseyFont);
+		newButton.setPosition(sf::Vector2f(684.0f, 200.0f + 150 * i ));
+		if (i == 0)
+		{
+			newButton.setText("Play");
+		}
+		else if (i == 1)
+		{
+			newButton.setText("Level Editor");
+		}
+		else if (i == 2)
+		{
+			newButton.setText("Options");
+		}
+		else if (i == 3)
+		{
+			newButton.setText("Exit");
+		}
 
-	m_optionsButton.setFont(m_jerseyFont);
-	m_optionsButton.setPosition(sf::Vector2f(684.0f, 400.0f));
-	m_optionsButton.setText("Options");
-
-	m_exitButton.setFont(m_jerseyFont);
-	m_exitButton.setPosition(sf::Vector2f(684.0f, 550.0f));
-	m_exitButton.setText("Exit");
+		m_menuButtons.push_back(newButton);
+	}
 }
 
 void Game::setupGameplay()
@@ -322,44 +400,55 @@ void Game::setupGameplay()
 		for (int col = 0; col < TILE_COLS; col++)
 		{
 			SurroundingTiles surrounding{ 0,0,0,0,0,0,0,0 };
-			if (col > 0)
-			{
-				surrounding.left = m_grid[row][col - 1];
-			}
-			if (col < TILE_COLS - 1)
-			{
-				surrounding.right = m_grid[row][col + 1];
-			}
-			if (row > 0)
-			{
-				surrounding.top = m_grid[row - 1][col];
-			}
-			if (row < TILE_ROWS - 1)
-			{
-				surrounding.bottom = m_grid[row + 1][col];
-			}
-			if (col > 0 && row > 0)
-			{
-				surrounding.topLeft = m_grid[row - 1][col - 1];
-			}
-			if (col < TILE_COLS - 1 && row > 0)
-			{
-				surrounding.topRight = m_grid[row - 1][col + 1];
-			}
-			if (col > 0 && row < TILE_ROWS - 1)
-			{
-				surrounding.bottomLeft = m_grid[row + 1][col - 1];
-			}
-			if (col < TILE_COLS - 1 && row < TILE_ROWS - 1)
-			{
-				surrounding.bottomRight = m_grid[row + 1][col + 1];
-			}
+			surrounding = getSurroundingTiles(row, col);
 
 			m_tiles[row][col].setTile(m_grid[row][col], surrounding);
 			m_tiles[row][col].setPosition(sf::Vector2f((col - 1) * 18 * TILE_SCALE, (row - 1) * 18 * TILE_SCALE)); // offset by one tile to account for offscreen tiles
 			m_tiles[row][col].setTexture(m_tileSetTexture);
 		}
 	}
+}
+
+SurroundingTiles Game::getSurroundingTiles(int t_row, int t_col)
+{
+	SurroundingTiles surrounding{ 0,0,0,0,0,0,0,0 };
+	int col = t_col;
+	int row = t_row;
+
+	if (col > 0)
+	{
+		surrounding.left = m_grid[row][col - 1];
+	}
+	if (col < TILE_COLS - 1)
+	{
+		surrounding.right = m_grid[row][col + 1];
+	}
+	if (row > 0)
+	{
+		surrounding.top = m_grid[row - 1][col];
+	}
+	if (row < TILE_ROWS - 1)
+	{
+		surrounding.bottom = m_grid[row + 1][col];
+	}
+	if (col > 0 && row > 0)
+	{
+		surrounding.topLeft = m_grid[row - 1][col - 1];
+	}
+	if (col < TILE_COLS - 1 && row > 0)
+	{
+		surrounding.topRight = m_grid[row - 1][col + 1];
+	}
+	if (col > 0 && row < TILE_ROWS - 1)
+	{
+		surrounding.bottomLeft = m_grid[row + 1][col - 1];
+	}
+	if (col < TILE_COLS - 1 && row < TILE_ROWS - 1)
+	{
+		surrounding.bottomRight = m_grid[row + 1][col + 1];
+	}
+
+	return surrounding;
 }
 
 void Game::loadLevel(int t_level)

@@ -28,6 +28,10 @@ public:
 	void setTexture(sf::Texture& t_texture);
 	void setTextureRect(SurroundingTiles t_surrounding, int t_tileType);
 
+	bool isMouseOver(sf::Vector2i t_mousePos);
+
+	void showOutline(bool t_show);
+
 	sf::Vector2f getPosition();
 	sf::RectangleShape getShape();
 
@@ -40,4 +44,7 @@ private:
 	sf::IntRect tileRect;
 
 	sf::RectangleShape rectangle;
+
+	bool outlineVisible;
+	bool empty;
 };

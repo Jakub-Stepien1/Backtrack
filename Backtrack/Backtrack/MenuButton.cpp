@@ -4,7 +4,7 @@ MenuButton::MenuButton()
 {
 	position = sf::Vector2f(200.0f, 50.0f);
 
-	text.setFont(font);
+	text.setFont(*font);
 	text.setCharacterSize(48);
 	text.setFillColor(sf::Color::White);
 	text.setOutlineColor(sf::Color::Black);
@@ -26,8 +26,8 @@ MenuButton::~MenuButton()
 
 void MenuButton::setFont(const sf::Font& t_font)
 {
-	font = t_font;
-	text.setFont(font);
+	font = &t_font;
+	text.setFont(*font);
 }
 
 void MenuButton::setPosition(const sf::Vector2f t_position)
@@ -37,10 +37,15 @@ void MenuButton::setPosition(const sf::Vector2f t_position)
 	rect.setPosition(position);
 }
 
-void MenuButton::setText(const sf::String t_string)
+void MenuButton::setText(const std::string t_string)
 {
 	text.setString(t_string);
 	text.setOrigin(text.getLocalBounds().getCenter());
+}
+
+std::string MenuButton::getText()
+{
+	return text.getString();
 }
 
 bool MenuButton::isMouseOver(sf::Vector2i t_mousePos)
