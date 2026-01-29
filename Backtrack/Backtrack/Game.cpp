@@ -336,6 +336,7 @@ void Game::renderGameplay()
 	m_window.draw(m_background2Sprite);
 	m_window.draw(m_background3Sprite);
 	m_window.draw(m_background4Sprite);
+	m_window.draw(m_background5Sprite);
 
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
@@ -429,6 +430,15 @@ void Game::setupImages()
 	m_background4Sprite.setOrigin(m_background4Sprite.getGlobalBounds().getCenter());
 	m_background4Sprite.setScale(BACKGROUND_SCALE);
 	m_background4Sprite.setPosition(m_defaultView.getCenter());
+
+	if (!m_background5Texture.loadFromFile("ASSETS\\IMAGES\\skybox5.png"))
+	{
+		std::cout << "problem loading background layer 5" << std::endl;
+	}
+	m_background5Sprite.setTexture(m_background5Texture, true);
+	m_background5Sprite.setOrigin(m_background5Sprite.getGlobalBounds().getCenter());
+	m_background5Sprite.setScale(BACKGROUND_SCALE);
+	m_background5Sprite.setPosition(m_defaultView.getCenter());
 }
 
 void Game::setupFonts()
@@ -569,28 +579,30 @@ void Game::handleCameraMovement(sf::Time t_deltaTime)
 
 void Game::parallaxBackground(sf::Time t_deltaTime)
 {
-	float parallaxSpeed = t_deltaTime.asSeconds() * 7.0f;
 	sf::Vector2f viewCenter = m_playerView.getCenter();
 	sf::Vector2f defaultCenter = m_defaultView.getCenter();
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 5; i++)
 	{
-		parallaxSpeed = t_deltaTime.asSeconds() * (5.0f + i * 3.0f);
+		float parallaxSpeed = t_deltaTime.asSeconds() * (5.0f + i * 4.0f);
 		sf::Vector2f backgroundPos = defaultCenter + (viewCenter - defaultCenter) * parallaxSpeed;
 
 		switch (i)
 		{
 		case 0:
-			m_background1Sprite.setPosition(backgroundPos);
+			m_background5Sprite.setPosition(backgroundPos);
 			break;
 		case 1:
-			m_background2Sprite.setPosition(backgroundPos);
+			m_background4Sprite.setPosition(backgroundPos);
 			break;
 		case 2:
 			m_background3Sprite.setPosition(backgroundPos);
 			break;
 		case 3:
-			m_background4Sprite.setPosition(backgroundPos);
+			m_background2Sprite.setPosition(backgroundPos);
+			break;
+		case 4:
+			m_background1Sprite.setPosition(backgroundPos);
 			break;
 		default:
 			break;

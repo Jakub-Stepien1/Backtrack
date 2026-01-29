@@ -137,6 +137,9 @@ private:
 	sf::Texture m_background4Texture;
 	sf::Sprite m_background4Sprite{ m_background4Texture };
 
+	sf::Texture m_background5Texture;
+	sf::Sprite m_background5Sprite{ m_background5Texture };
+
 	sf::View m_defaultView;
 	sf::View m_playerView;
 
