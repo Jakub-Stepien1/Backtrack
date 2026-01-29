@@ -1,11 +1,11 @@
 # Project Progress
 
-# (28/01/26)
+# (29/01/26)
 ## What was added to the game:
-> 1. Added new font.
-> 2. Added title screen.
-> 3. Added background for menu.
-> 4. You can now choose to place grass or brick tiles in the editor by pressing 1 or 2 respectively, and right click to remove a tile.
+> 1. Updated some assets.
+> 2. Added background layers for gameplay.
+> 3. Made a viewport that's zoomed in and follows the player.
+> 4. Implemented a parallax background for gameplay
 
 
 ## Need to focus on next:

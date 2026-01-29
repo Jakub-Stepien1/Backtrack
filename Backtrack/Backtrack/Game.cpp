@@ -11,8 +11,10 @@
 /// load and setup the sounds
 /// </summary>
 Game::Game() :
-	m_window{ sf::VideoMode{ sf::Vector2u{1368U, 768U}, 32U }, "Backtrack" }, // 1368x768 = 16:9 aspect ratio (38x21 tiles)
-	m_currentGameState{ Gamestate::TitleScreen }
+	m_window{ sf::VideoMode{ sf::Vector2u{1368U, 768U}, 64U }, "Backtrack" }, // 1368x768 = 16:9 aspect ratio (38x21 tiles)
+	m_currentGameState{ Gamestate::TitleScreen },
+	m_defaultView{sf::FloatRect( sf::Vector2f(0, 0), sf::Vector2f(m_window.getSize().x, m_window.getSize().y)) },
+	m_playerView{ sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_window.getSize().x / 1.2f, m_window.getSize().y) / 1.2f) }
 {
 	setup(); // load all resources and game data
 }
@@ -82,12 +84,12 @@ void Game::processKeys(const std::optional<sf::Event> t_event)
 	const sf::Event::KeyPressed *newKeypress = t_event->getIf<sf::Event::KeyPressed>();
 	if (sf::Keyboard::Key::Escape == newKeypress->code)
 	{
-		m_currentGameState = Gamestate::Menu;
+		changeGameState(Gamestate::Menu);
 	}
 
 	if (m_currentGameState == TitleScreen)
 	{
-		m_currentGameState = Gamestate::Menu;
+		changeGameState(Gamestate::Menu);
 	}
 }
 
@@ -186,8 +188,7 @@ void Game::updateMenu(sf::Time t_deltaTime)
 							m_tiles[row][col].showOutline(false);
 						}
 					}
-
-					m_currentGameState = Gamestate::Gameplay;
+					changeGameState(Gamestate::Gameplay);
 				}
 				else if (button.getText() == "Level Editor")
 				{
@@ -198,8 +199,7 @@ void Game::updateMenu(sf::Time t_deltaTime)
 							m_tiles[row][col].showOutline(true);
 						}
 					}
-
-					m_currentGameState = Gamestate::LevelEditor;
+					changeGameState(Gamestate::LevelEditor);
 				}
 				else if (button.getText() == "Options")
 				{
@@ -269,12 +269,14 @@ void Game::updateLevelEditor(sf::Time t_deltaTime)
 			}
 		}
 	}
-	
 }
 
 void Game::updateGameplay(sf::Time t_deltaTime)
 {
 	bool noTileCollision = true;
+
+	handleCameraMovement(t_deltaTime);
+	parallaxBackground(t_deltaTime);
 
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
@@ -330,7 +332,10 @@ void Game::renderLevelEditor()
 
 void Game::renderGameplay()
 {
-	//m_window.draw(m_backgroundSprite);
+	m_window.draw(m_background1Sprite);
+	m_window.draw(m_background2Sprite);
+	m_window.draw(m_background3Sprite);
+	m_window.draw(m_background4Sprite);
 
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
@@ -389,12 +394,41 @@ void Game::setupImages()
 		std::cout << "problem loading tileset" << std::endl;
 	}
 
-	if (!m_backgroundTexture.loadFromFile("ASSETS\\IMAGES\\background.png"))
+	if (!m_background1Texture.loadFromFile("ASSETS\\IMAGES\\skybox1.png"))
 	{
-		std::cout << "problem loading background" << std::endl;
+		std::cout << "problem loading background layer 1" << std::endl;
 	}
-	m_backgroundSprite.setTexture(m_backgroundTexture, true);
-	m_backgroundSprite.setScale(sf::Vector2f(1.2f, 1.6f));
+	m_background1Sprite.setTexture(m_background1Texture, true);
+	m_background1Sprite.setOrigin(m_background1Sprite.getGlobalBounds().getCenter());
+	m_background1Sprite.setScale(BACKGROUND_SCALE);
+	m_background1Sprite.setPosition(m_defaultView.getCenter());
+	
+	if (!m_background2Texture.loadFromFile("ASSETS\\IMAGES\\skybox2.png"))
+	{
+		std::cout << "problem loading background layer 2" << std::endl;
+	}
+	m_background2Sprite.setTexture(m_background2Texture, true);
+	m_background2Sprite.setOrigin(m_background2Sprite.getGlobalBounds().getCenter());
+	m_background2Sprite.setScale(BACKGROUND_SCALE);
+	m_background2Sprite.setPosition(m_defaultView.getCenter());
+	
+	if (!m_background3Texture.loadFromFile("ASSETS\\IMAGES\\skybox3.png"))
+	{
+		std::cout << "problem loading background layer 3" << std::endl;
+	}
+	m_background3Sprite.setTexture(m_background3Texture, true);
+	m_background3Sprite.setOrigin(m_background3Sprite.getGlobalBounds().getCenter());
+	m_background3Sprite.setScale(BACKGROUND_SCALE);
+	m_background3Sprite.setPosition(m_defaultView.getCenter());
+
+	if (!m_background4Texture.loadFromFile("ASSETS\\IMAGES\\skybox4.png"))
+	{
+		std::cout << "problem loading background layer 4" << std::endl;
+	}
+	m_background4Sprite.setTexture(m_background4Texture, true);
+	m_background4Sprite.setOrigin(m_background4Sprite.getGlobalBounds().getCenter());
+	m_background4Sprite.setScale(BACKGROUND_SCALE);
+	m_background4Sprite.setPosition(m_defaultView.getCenter());
 }
 
 void Game::setupFonts()
@@ -468,6 +502,98 @@ void Game::setupGameplay()
 			m_tiles[row][col].setTile(m_grid[row][col], surrounding);
 			m_tiles[row][col].setPosition(sf::Vector2f((col - 1) * 18 * TILE_SCALE, (row - 1) * 18 * TILE_SCALE)); // offset by one tile to account for offscreen tiles
 			m_tiles[row][col].setTexture(m_tileSetTexture);
+		}
+	}
+}
+
+void Game::changeGameState(Gamestate t_newState)
+{
+	switch (t_newState)
+	{
+	case TitleScreen:
+		m_window.setView(m_defaultView);
+		m_currentGameState = TitleScreen;
+		break;
+	case Menu:
+		m_window.setView(m_defaultView);
+		m_currentGameState = Menu;
+		break;
+	case LevelEditor:
+		m_window.setView(m_defaultView);
+		m_currentGameState = LevelEditor;
+		break;
+	case Gameplay:
+		m_window.setView(m_playerView);
+		m_currentGameState = Gameplay;
+		break;
+	case Pause:
+		m_currentGameState = Pause;
+		break;
+	case Dialogue:
+		m_currentGameState = Dialogue;
+		break;
+	default:
+		break;
+	}
+}
+
+void Game::handleCameraMovement(sf::Time t_deltaTime)
+{
+	sf::Vector2f currentViewPos = m_playerView.getCenter();
+	sf::Vector2f targetViewPos = m_player.getPosition();
+
+	float cameraSpeed = t_deltaTime.asSeconds() * 10.0f;
+
+	currentViewPos = currentViewPos + (targetViewPos - currentViewPos) * cameraSpeed;
+
+	if (currentViewPos.x < m_playerView.getSize().x / 2.0f )
+	{
+		currentViewPos.x = m_playerView.getSize().x / 2.0f;
+	}
+	else if (currentViewPos.x > m_defaultView.getSize().x - m_playerView.getSize().x / 2.0f)
+	{
+		currentViewPos.x = m_defaultView.getSize().x - m_playerView.getSize().x / 2.0f;
+	}
+	if (currentViewPos.y < m_playerView.getSize().y / 2.0f)
+	{
+		currentViewPos.y = m_playerView.getSize().y / 2.0f;
+	}
+	else if (currentViewPos.y > m_defaultView.getSize().y - m_playerView.getSize().y / 2.0f)
+	{
+		currentViewPos.y = m_defaultView.getSize().y - m_playerView.getSize().y / 2.0f;
+	}
+
+	m_playerView.setCenter(currentViewPos);
+	m_window.setView(m_playerView);
+}
+
+void Game::parallaxBackground(sf::Time t_deltaTime)
+{
+	float parallaxSpeed = t_deltaTime.asSeconds() * 7.0f;
+	sf::Vector2f viewCenter = m_playerView.getCenter();
+	sf::Vector2f defaultCenter = m_defaultView.getCenter();
+
+	for (int i = 0; i < 4; i++)
+	{
+		parallaxSpeed = t_deltaTime.asSeconds() * (5.0f + i * 3.0f);
+		sf::Vector2f backgroundPos = defaultCenter + (viewCenter - defaultCenter) * parallaxSpeed;
+
+		switch (i)
+		{
+		case 0:
+			m_background1Sprite.setPosition(backgroundPos);
+			break;
+		case 1:
+			m_background2Sprite.setPosition(backgroundPos);
+			break;
+		case 2:
+			m_background3Sprite.setPosition(backgroundPos);
+			break;
+		case 3:
+			m_background4Sprite.setPosition(backgroundPos);
+			break;
+		default:
+			break;
 		}
 	}
 }

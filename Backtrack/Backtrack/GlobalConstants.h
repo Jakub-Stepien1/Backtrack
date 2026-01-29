@@ -4,6 +4,8 @@
 const sf::Vector2i TILE_SIZE{ 18, 18 };
 static const int TILE_SCALE = 2;
 
+static const sf::Vector2f BACKGROUND_SCALE = sf::Vector2f(3.0f, 4.0f);
+
 static const int TILE_ROWS = 23; // 21 + 2 offscreen (1 on each side)
 static const int TILE_COLS = 40; // 38 + 2 offscreen (1 on each side)
 

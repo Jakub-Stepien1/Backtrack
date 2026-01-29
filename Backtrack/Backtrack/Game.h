@@ -63,6 +63,10 @@ private:
 	void setupMenu();
 	void setupGameplay();
 
+	void changeGameState(Gamestate t_newState);
+	void handleCameraMovement(sf::Time t_deltaTime);
+	void parallaxBackground(sf::Time t_deltaTime);
+
 	SurroundingTiles getSurroundingTiles(int t_row, int t_col);
 
 	void loadLevel(int t_level);
@@ -121,8 +125,20 @@ private:
 	sf::Texture m_menuBackgroundTexture;
 	sf::Sprite m_menuBackgroundSprite{ m_menuBackgroundTexture };
 
-	sf::Texture m_backgroundTexture;
-	sf::Sprite m_backgroundSprite{m_backgroundTexture};
+	sf::Texture m_background1Texture;
+	sf::Sprite m_background1Sprite{m_background1Texture};
+
+	sf::Texture m_background2Texture;
+	sf::Sprite m_background2Sprite{ m_background2Texture };
+
+	sf::Texture m_background3Texture;
+	sf::Sprite m_background3Sprite{ m_background3Texture };
+
+	sf::Texture m_background4Texture;
+	sf::Sprite m_background4Sprite{ m_background4Texture };
+
+	sf::View m_defaultView;
+	sf::View m_playerView;
 
 };
 
