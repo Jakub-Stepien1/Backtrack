@@ -116,8 +116,12 @@ private:
 	sf::Texture m_logoTexture;
 	sf::Sprite m_logoSprite{ m_logoTexture };
 
-	sf::Texture m_titleScreenTexture;
-	sf::Sprite m_titleScreenSprite{ m_titleScreenTexture };
+	sf::Texture m_titleScreenBackgroundTexture;
+	sf::Sprite m_titleScreenBackgroundSprite{ m_titleScreenBackgroundTexture };
+	sf::Texture m_titleScreenCatTexture;
+	sf::Sprite m_titleScreenCatSprite{ m_titleScreenCatTexture };
+	sf::Texture m_titleScreenParticlesTexture;
+	sf::Sprite m_titleScreenParticlesSprite{ m_titleScreenParticlesTexture };
 	sf::Text m_titleScreenText{ m_backtrackFont };
 
 	sf::Vector2f m_textVel;

@@ -71,6 +71,13 @@ void Game::processEvents()
 		{
 			processKeys(newEvent);
 		}
+		if (newEvent->is<sf::Event::MouseButtonPressed>())
+		{
+			if (m_currentGameState == TitleScreen)
+			{
+				changeGameState(Gamestate::Menu);
+			}
+		}
 	}
 }
 
@@ -164,6 +171,10 @@ void Game::updateTitleScreen(sf::Time t_deltaTime)
 	{
 		m_textVel = sf::Vector2f(0.0f, 10.0f * t_deltaTime.asSeconds());
 	}
+
+	m_titleScreenParticlesSprite.move(m_textVel);
+	m_titleScreenCatSprite.move(-m_textVel);
+
 	m_titleScreenText.move(m_textVel);
 	m_logoSprite.move(m_textVel);
 }
@@ -303,8 +314,11 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 
 void Game::renderTitleScreen()
 {
-	m_window.draw(m_titleScreenSprite);
+	m_window.draw(m_titleScreenBackgroundSprite);
 	m_window.draw(m_logoSprite);
+	m_window.draw(m_titleScreenParticlesSprite);
+	m_window.draw(m_titleScreenCatSprite);
+
 	m_window.draw(m_titleScreenText);
 }
 
@@ -368,12 +382,26 @@ void Game::setup()
 
 void Game::setupImages()
 {
-	if (!m_titleScreenTexture.loadFromFile("ASSETS\\IMAGES\\background-title.png"))
+	if (!m_titleScreenBackgroundTexture.loadFromFile("ASSETS\\IMAGES\\title-background.png"))
 	{
 		std::cout << "problem loading title screen background" << std::endl;
 	}
-	m_titleScreenSprite.setTexture(m_titleScreenTexture, true);
-	m_titleScreenSprite.setScale(sf::Vector2f(0.5f, 0.5f));
+	m_titleScreenBackgroundSprite.setTexture(m_titleScreenBackgroundTexture, true);
+	m_titleScreenBackgroundSprite.setScale(sf::Vector2f(0.5f, 0.5f));
+
+	if (!m_titleScreenParticlesTexture.loadFromFile("ASSETS\\IMAGES\\title-sparkle.png"))
+	{
+		std::cout << "problem loading title screen particles" << std::endl;
+	}
+	m_titleScreenParticlesSprite.setTexture(m_titleScreenParticlesTexture, true);
+	m_titleScreenParticlesSprite.setScale(sf::Vector2f(0.5f, 0.5f));
+
+	if (!m_titleScreenCatTexture.loadFromFile("ASSETS\\IMAGES\\title-cat.png"))
+	{
+		std::cout << "problem loading title screen cat" << std::endl;
+	}
+	m_titleScreenCatSprite.setTexture(m_titleScreenCatTexture, true);
+	m_titleScreenCatSprite.setScale(sf::Vector2f(0.5f, 0.5f));
 
 	if (!m_logoTexture.loadFromFile("ASSETS\\IMAGES\\logo-title.png"))
 	{
