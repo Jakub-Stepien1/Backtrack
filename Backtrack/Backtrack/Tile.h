@@ -32,6 +32,8 @@ public:
 
 	void showOutline(bool t_show);
 
+	float distanceToTile(sf::Vector2f t_playerPos);
+
 	sf::Vector2f getPosition();
 	sf::Vector2f getCenter();
 	sf::RectangleShape getShape();

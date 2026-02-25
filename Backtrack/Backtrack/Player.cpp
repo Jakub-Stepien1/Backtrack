@@ -115,7 +115,7 @@ void Player::checkInput()
 		
 		if (m_position.y > m_groundLevel)
 		{
-			if (m_groundLevel == 2000.0f)
+			if (m_groundLevel == 2000.0f) // if falls off map; come back
 			{
 				m_position.y = 400.0f;
 			}
@@ -130,13 +130,6 @@ void Player::checkInput()
 	}
 #pragma endregion
 	
-	m_position += m_velocity;
-	m_hitbox.setPosition(m_position);
-
-	m_spritePosition = sf::Vector2f(m_position.x, m_position.y - 6.0f);
-	m_sprite.setPosition(m_spritePosition);
-
-
 	if (std::abs(m_velocity.x) > 0.05f) // Apply friction
 	{
 		m_velocity.x *= 0.8f;
@@ -149,6 +142,13 @@ void Player::checkInput()
 			m_playerState = PlayerState::Idle;
 		}
 	}
+
+	m_position += m_velocity;
+	m_hitbox.setPosition(m_position);
+
+	m_spritePosition = sf::Vector2f(m_position.x + 2.0f, m_position.y - 6.0f);
+	m_sprite.setPosition(m_spritePosition);
+
 	//std::cout << m_velocity.x << std::endl;
 }
 
@@ -176,22 +176,76 @@ void Player::checkState()
 	}
 }
 
+void Player::checkCeilingCollisions(Tile& t_tile)
+{
+	sf::Vector2f topLeft = sf::Vector2f(m_position.x - m_hitbox.getSize().x / 2.0f, m_position.y - m_hitbox.getSize().y / 2.0f);
+	sf::Vector2f topRight = sf::Vector2f(m_position.x + m_hitbox.getSize().x / 2.0f, m_position.y - m_hitbox.getSize().y / 2.0f);
+
+	topLeft += m_velocity;
+	topRight += m_velocity;
+
+	if (t_tile.getShape().getGlobalBounds().contains(topLeft)
+		|| t_tile.getShape().getGlobalBounds().contains(topRight))
+	{
+		m_velocity = sf::Vector2f(m_velocity.x, 0.0f);
+		m_position += m_velocity;
+	}
+}
+
+void Player::checkSideCollisions(Tile& t_tile)
+{
+	/*sf::Vector2f bottomLeft = sf::Vector2f(m_position.x - m_hitbox.getSize().x / 2.0f, m_position.y + m_hitbox.getSize().y / 2.0f);
+	sf::Vector2f bottomRight = sf::Vector2f(m_position.x + m_hitbox.getSize().x / 2.0f, m_position.y + m_hitbox.getSize().y / 2.0f);
+	sf::Vector2f topLeft = sf::Vector2f(m_position.x - m_hitbox.getSize().x / 2.0f, m_position.y - m_hitbox.getSize().y / 2.0f);
+	sf::Vector2f topRight = sf::Vector2f(m_position.x + m_hitbox.getSize().x / 2.0f, m_position.y - m_hitbox.getSize().y / 2.0f);
+	
+	bottomLeft += m_velocity;
+	bottomRight += m_velocity;
+	topLeft += m_velocity;
+	topRight += m_velocity;
+
+	std::cout << m_position.y + m_hitbox.getSize().y << "\t " << t_tile.getCenter().y + t_tile.getShape().getSize().y << std::endl;
+	if (m_position.y + m_hitbox.getSize().y == t_tile.getCenter().y + t_tile.getShape().getSize().y)
+	{
+		if (t_tile.getShape().getGlobalBounds().contains(bottomRight))
+		{
+			m_velocity = -m_velocity;
+		}
+	}*/
+	sf::Vector2f middleLeft = sf::Vector2f(m_position.x - m_hitbox.getSize().x / 2.0f, m_position.y);
+	sf::Vector2f middleRight = sf::Vector2f(m_position.x + m_hitbox.getSize().x / 2.0f, m_position.y);
+	
+	middleLeft += m_velocity;
+	middleRight += m_velocity;
+
+	if (t_tile.getShape().getGlobalBounds().contains(middleRight)
+		|| t_tile.getShape().getGlobalBounds().contains(middleLeft))
+	{
+		if (m_velocity != sf::Vector2f(0.0f, 0.0f))
+		{
+			m_velocity = sf::Vector2f(-m_velocity.normalized().x * m_speed, 0.0f);
+			m_position += m_velocity;
+		}
+	}
+}
+
 bool Player::checkGroundCollisions(Tile& t_tile)
 {
 	sf::Vector2f bottomLeft = sf::Vector2f(m_position.x - m_hitbox.getSize().x / 2.0f, m_position.y + m_hitbox.getSize().y / 2.0f);
-	bottomLeft += m_velocity;
-
 	sf::Vector2f bottomRight = sf::Vector2f(m_position.x + m_hitbox.getSize().x / 2.0f, m_position.y + m_hitbox.getSize().y / 2.0f);
+
+	bottomLeft += m_velocity;
 	bottomRight += m_velocity;
 
-	if (t_tile.getCenter().y >= bottomLeft.y)
+	if (t_tile.getShape().getGlobalBounds().contains(bottomLeft)
+		&& bottomLeft.y < t_tile.getCenter().y
+		|| t_tile.getShape().getGlobalBounds().contains(bottomRight)
+		&& bottomRight.y < t_tile.getCenter().y)
 	{
-		if (t_tile.getShape().getGlobalBounds().contains(bottomLeft)
-			|| t_tile.getShape().getGlobalBounds().contains(bottomRight))
-		{
-			return true;
-		}
+		calculateGroundLevel(t_tile);
+		return true;
 	}
+
 	return false;
 }
 

@@ -330,6 +330,12 @@ void Tile::showOutline(bool t_show)
 	}
 }
 
+float Tile::distanceToTile(sf::Vector2f t_playerPos)
+{
+	float distance = sqrt(pow((getCenter().x - t_playerPos.x), 2) + pow((getCenter().y - t_playerPos.y), 2));
+	return distance;
+}
+
 sf::Vector2f Tile::getPosition()
 {
 	return position;

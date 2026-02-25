@@ -29,6 +29,8 @@ public:
 	void checkInput();
 	void checkState();
 
+	void checkCeilingCollisions(Tile& t_tile);
+	void checkSideCollisions(Tile& t_tile);
 	bool checkGroundCollisions(Tile& t_tile);
 	void calculateGroundLevel(Tile& t_tile);
 
@@ -49,7 +51,7 @@ private:
 	sf::Sprite m_sprite;
 
 	sf::RectangleShape m_hitbox;
-	
+
 	sf::Vector2f m_position;
 	sf::Vector2f m_spritePosition;
 	sf::Vector2f m_velocity;

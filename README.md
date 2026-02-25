@@ -2,7 +2,7 @@
 
 # (25/02/26)
 ## What was added to the game:
-> 1. Refined ground collisions a bit, now checks both corners of the player hitbox instead of just the center.
+> 1. Made collisions for the sides of tiles and the ceilings, very primitive at the moment; need to refine.
 
 ## Need to focus on next:
 > 1. Research resource holders for texture, could be better in the long run.

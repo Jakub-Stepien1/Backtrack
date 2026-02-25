@@ -284,7 +284,7 @@ void Game::updateLevelEditor(sf::Time t_deltaTime)
 
 void Game::updateGameplay(sf::Time t_deltaTime)
 {
-	bool noTileCollision = true;
+	bool noGroundCollision = true;
 
 	handleCameraMovement(t_deltaTime);
 	parallaxBackground(t_deltaTime);
@@ -293,18 +293,21 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 	{
 		for (int col = 0; col < TILE_COLS; col++)
 		{
-			if (m_grid[row][col] != 0)
+			if (m_grid[row][col] != 0
+				&& m_tiles[row][col].distanceToTile(m_player.getPosition()) < 150)
 			{
+				m_player.checkCeilingCollisions(m_tiles[row][col]);
+				m_player.checkSideCollisions(m_tiles[row][col]);
+
 				if (m_player.checkGroundCollisions(m_tiles[row][col]))
 				{
-					m_player.calculateGroundLevel(m_tiles[row][col]);
-					noTileCollision = false;
+					noGroundCollision = false;
 				}
 			}
 		}
 	}
 
-	if (noTileCollision)
+	if (noGroundCollision)
 	{
 		m_player.setGroundLevel(2000.0f);
 	}
