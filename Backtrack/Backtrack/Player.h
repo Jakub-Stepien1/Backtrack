@@ -29,7 +29,7 @@ public:
 	void checkInput();
 	void checkState();
 
-	bool checkGroundCollision(Tile& t_tile);
+	bool checkGroundCollisions(Tile& t_tile);
 	void calculateGroundLevel(Tile& t_tile);
 
 	void setGroundLevel(float t_groundLevel);

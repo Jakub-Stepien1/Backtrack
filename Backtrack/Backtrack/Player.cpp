@@ -176,19 +176,23 @@ void Player::checkState()
 	}
 }
 
-bool Player::checkGroundCollision(Tile& t_tile)
+bool Player::checkGroundCollisions(Tile& t_tile)
 {
-	sf::Vector2f bottomCenterPlayer = sf::Vector2f(m_position.x, m_position.y + m_hitbox.getSize().y / 2.0f);
-	bottomCenterPlayer += m_velocity;
+	sf::Vector2f bottomLeft = sf::Vector2f(m_position.x - m_hitbox.getSize().x / 2.0f, m_position.y + m_hitbox.getSize().y / 2.0f);
+	bottomLeft += m_velocity;
 
-	if (t_tile.getShape().getGlobalBounds().contains(bottomCenterPlayer))
+	sf::Vector2f bottomRight = sf::Vector2f(m_position.x + m_hitbox.getSize().x / 2.0f, m_position.y + m_hitbox.getSize().y / 2.0f);
+	bottomRight += m_velocity;
+
+	if (t_tile.getCenter().y >= bottomLeft.y)
 	{
-		return true;
+		if (t_tile.getShape().getGlobalBounds().contains(bottomLeft)
+			|| t_tile.getShape().getGlobalBounds().contains(bottomRight))
+		{
+			return true;
+		}
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 void Player::calculateGroundLevel(Tile& t_tile)

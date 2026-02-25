@@ -295,7 +295,7 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 		{
 			if (m_grid[row][col] != 0)
 			{
-				if (m_player.checkGroundCollision(m_tiles[row][col]))
+				if (m_player.checkGroundCollisions(m_tiles[row][col]))
 				{
 					m_player.calculateGroundLevel(m_tiles[row][col]);
 					noTileCollision = false;

@@ -33,6 +33,7 @@ public:
 	void showOutline(bool t_show);
 
 	sf::Vector2f getPosition();
+	sf::Vector2f getCenter();
 	sf::RectangleShape getShape();
 
 private:

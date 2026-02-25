@@ -335,6 +335,12 @@ sf::Vector2f Tile::getPosition()
 	return position;
 }
 
+sf::Vector2f Tile::getCenter()
+{
+	sf::Vector2f center = sf::Vector2f(position.x + rectangle.getSize().x, position.y + rectangle.getSize().y);
+	return center;
+}
+
 sf::RectangleShape Tile::getShape()
 {
 	return rectangle;
