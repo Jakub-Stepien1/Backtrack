@@ -246,11 +246,11 @@ void Game::updateLevelEditor(sf::Time t_deltaTime)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1))
 	{
-		selectedTile = 1;
+		m_selectedTile = 1;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num2))
 	{
-		selectedTile = 2;
+		m_selectedTile = 2;
 	}
 
 	for (int row = 0; row < TILE_ROWS; row++)
@@ -261,9 +261,9 @@ void Game::updateLevelEditor(sf::Time t_deltaTime)
 			{
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
 				{
-					m_grid[row][col] = selectedTile;
+					m_grid[row][col] = m_selectedTile;
 					SurroundingTiles surrounding = getSurroundingTiles(row, col);
-					m_tiles[row][col].setTile(selectedTile, surrounding);
+					m_tiles[row][col].setTile(m_selectedTile, surrounding);
 				}
 				else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
 				{
@@ -310,6 +310,11 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 	if (noGroundCollision)
 	{
 		m_player.setGroundLevel(2000.0f);
+	}
+
+	if (m_player.getPosition().x > 1368.0f)
+	{
+		progressLevel();
 	}
 
 	m_player.update();
@@ -501,7 +506,7 @@ void Game::setupSounds()
 
 void Game::setupMenu()
 {
-	selectedTile = 0;
+	m_selectedTile = 0;
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -531,7 +536,8 @@ void Game::setupMenu()
 
 void Game::setupGameplay()
 {
-	loadLevel(1);
+	m_currentLevel = 1;
+	loadLevel(m_currentLevel);
 
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
@@ -641,6 +647,26 @@ void Game::parallaxBackground(sf::Time t_deltaTime)
 	}
 }
 
+void Game::progressLevel()
+{
+	m_currentLevel += 1;
+	m_player.setToLevelStart();
+	loadLevel(m_currentLevel);
+
+	for (int row = 0; row < TILE_ROWS; row++)
+	{
+		for (int col = 0; col < TILE_COLS; col++)
+		{
+			SurroundingTiles surrounding{ 0,0,0,0,0,0,0,0 };
+			surrounding = getSurroundingTiles(row, col);
+
+			m_tiles[row][col].setTile(m_grid[row][col], surrounding);
+			m_tiles[row][col].setPosition(sf::Vector2f((col - 1) * 18 * TILE_SCALE, (row - 1) * 18 * TILE_SCALE)); // offset by one tile to account for offscreen tiles
+			m_tiles[row][col].setTexture(m_tileSetTexture);
+		}
+	}
+}
+
 SurroundingTiles Game::getSurroundingTiles(int t_row, int t_col)
 {
 	SurroundingTiles surrounding{ 0,0,0,0,0,0,0,0 };
@@ -693,6 +719,8 @@ void Game::loadLevel(int t_level)
 		return;
 	}
 
+	std::cout << "Loading level file: ASSETS\\LEVELS\\level" + std::to_string(t_level) + ".txt" << std::endl;
+
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
 		for (int col = 0; col < TILE_COLS; col++)
@@ -700,4 +728,6 @@ void Game::loadLevel(int t_level)
 			file >> m_grid[row][col];
 		}
 	}
+
+	file.close();
 }

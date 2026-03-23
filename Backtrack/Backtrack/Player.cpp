@@ -11,9 +11,21 @@ Player::Player() :
 	m_previousState = PlayerState::None;
 	m_playerState = PlayerState::Idle;
 
+	m_maxHealth = 2;
+	m_health = m_maxHealth;
+
 	m_position = sf::Vector2f(100.0f, 400.0f);
 	m_spritePosition = sf::Vector2f(m_position.x + 6.0f, m_position.y - 6.0f);
-	m_speed = 2.0f;
+	m_speed = 1.5f;
+
+	m_healthBarBackground.setSize(sf::Vector2f(64.0f, 12.0f));
+	m_healthBarBackground.setFillColor(sf::Color(0, 0, 0, 160));
+	m_healthBarBackground.setOrigin(m_healthBarBackground.getSize() / 2.0f);
+	m_healthBarBackground.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
+	m_healthBar.setSize(sf::Vector2f(60.0f, 8.0f));
+	m_healthBar.setFillColor(sf::Color(0, 255, 0, 160));
+	m_healthBar.setOrigin(m_healthBar.getSize() / 2.0f);
+	m_healthBar.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
 
 	m_hitbox.setSize(sf::Vector2f(60.0f, 90.0f));
 	m_hitbox.setOrigin(m_hitbox.getSize() / 2.0f);
@@ -39,6 +51,9 @@ void Player::update()
 	checkInput();
 	//checkState();
 
+	m_healthBarBackground.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
+	m_healthBar.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
+
 	if (m_playerState != m_previousState)
 	{
 		setFrames();
@@ -56,6 +71,9 @@ void Player::update()
 
 void Player::render(sf::RenderWindow& t_window)
 {
+	t_window.draw(m_healthBarBackground);
+	t_window.draw(m_healthBar);
+
 	t_window.draw(m_hitbox);
 	t_window.draw(m_sprite);	
 }
@@ -143,7 +161,7 @@ void Player::checkInput()
 		}
 	}
 
-	m_position += m_velocity;
+	m_position += m_velocity * m_speed;
 	m_hitbox.setPosition(m_position);
 
 	m_spritePosition = sf::Vector2f(m_position.x + 2.0f, m_position.y - 6.0f);
@@ -358,6 +376,12 @@ void Player::setFrames()
 	default:
 		break;
 	}
+}
+
+void Player::setToLevelStart()
+{
+	m_position = sf::Vector2f(50.0f, m_position.y);
+
 }
 
 sf::Vector2f Player::getPosition()

@@ -67,6 +67,8 @@ private:
 	void handleCameraMovement(sf::Time t_deltaTime);
 	void parallaxBackground(sf::Time t_deltaTime);
 
+	void progressLevel();
+
 	SurroundingTiles getSurroundingTiles(int t_row, int t_col);
 
 	void loadLevel(int t_level);
@@ -109,7 +111,9 @@ private:
 
 	Tile m_tiles[TILE_ROWS][TILE_COLS];
 
-	int selectedTile;
+	int m_selectedTile;
+
+	int m_currentLevel;
 
 	sf::Texture m_tileSetTexture;
 	

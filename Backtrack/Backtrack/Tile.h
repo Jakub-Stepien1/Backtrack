@@ -15,6 +15,11 @@ struct SurroundingTiles
 	int bottomRight = 0;
 };
 
+/////////////// TILE TYPES ///////////////
+// 0 = empty
+// 1 = grass
+// 2 = brick
+
 class Tile
 {
 public:

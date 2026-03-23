@@ -41,6 +41,8 @@ public:
 	void addFrame(sf::IntRect& t_frame);
 	void setFrames();
 
+	void setToLevelStart();
+
 	sf::Vector2f getPosition();
 	PlayerState getState();
 
@@ -51,6 +53,12 @@ private:
 	sf::Sprite m_sprite;
 
 	sf::RectangleShape m_hitbox;
+
+	int m_maxHealth;
+	int m_health;
+
+	sf::RectangleShape m_healthBarBackground;
+	sf::RectangleShape m_healthBar;
 
 	sf::Vector2f m_position;
 	sf::Vector2f m_spritePosition;
