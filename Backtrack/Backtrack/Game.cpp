@@ -318,6 +318,16 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 	}
 
 	m_player.update();
+
+	if (m_keyItem != nullptr)
+	{
+		if (m_keyItem->collidesWithPlayer(m_player.getPosition()))
+		{
+			m_player.addKeyItem();
+			delete m_keyItem;
+			m_keyItem = nullptr;
+		}
+	}
 }
 
 void Game::renderTitleScreen()
@@ -369,6 +379,11 @@ void Game::renderGameplay()
 				m_tiles[row][col].render(m_window);
 			}
 		}
+	}
+
+	if (m_keyItem != nullptr)
+	{
+		m_keyItem->render(m_window);
 	}
 
 	m_player.render(m_window);
@@ -665,6 +680,13 @@ void Game::progressLevel()
 			m_tiles[row][col].setTexture(m_tileSetTexture);
 		}
 	}
+
+	if (m_currentLevel == 2)
+	{
+		m_keyItem = new Pickup();
+		m_keyItem->setPosition(sf::Vector2f(650.0f, 300.0f));
+	}
+
 }
 
 SurroundingTiles Game::getSurroundingTiles(int t_row, int t_col)

@@ -36,6 +36,8 @@ public:
 
 	void setGroundLevel(float t_groundLevel);
 
+	void addKeyItem();
+
 	void animate();
 	void playAnimationOnce();
 	void addFrame(sf::IntRect& t_frame);
@@ -54,16 +56,21 @@ private:
 
 	sf::RectangleShape m_hitbox;
 
-	int m_maxHealth;
+	/*int m_maxHealth;
 	int m_health;
 
 	sf::RectangleShape m_healthBarBackground;
-	sf::RectangleShape m_healthBar;
+	sf::RectangleShape m_healthBar;*/
 
 	sf::Vector2f m_position;
 	sf::Vector2f m_spritePosition;
 	sf::Vector2f m_velocity;
 	float m_speed;
+
+	int m_keyItemCount;
+
+	bool m_hasDoubleJump;
+	bool m_doubleJumpReady;
 
 	float m_groundLevel;
 

@@ -17,6 +17,7 @@
 #include "Player.h"
 #include "Tile.h"
 #include "MenuButton.h"
+#include "Pickup.h"
 #include <iostream>
 #include <fstream>
 
@@ -115,6 +116,8 @@ private:
 
 	int m_currentLevel;
 
+	Pickup* m_keyItem;
+
 	sf::Texture m_tileSetTexture;
 	
 	sf::Texture m_logoTexture;
@@ -134,7 +137,7 @@ private:
 	sf::Sprite m_menuBackgroundSprite{ m_menuBackgroundTexture };
 
 	sf::Texture m_background1Texture;
-	sf::Sprite m_background1Sprite{m_background1Texture};
+	sf::Sprite m_background1Sprite{ m_background1Texture };
 
 	sf::Texture m_background2Texture;
 	sf::Sprite m_background2Sprite{ m_background2Texture };

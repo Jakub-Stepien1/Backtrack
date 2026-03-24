@@ -11,21 +11,21 @@ Player::Player() :
 	m_previousState = PlayerState::None;
 	m_playerState = PlayerState::Idle;
 
-	m_maxHealth = 2;
-	m_health = m_maxHealth;
+	//m_maxHealth = 2;
+	//m_health = m_maxHealth;
 
 	m_position = sf::Vector2f(100.0f, 400.0f);
 	m_spritePosition = sf::Vector2f(m_position.x + 6.0f, m_position.y - 6.0f);
 	m_speed = 1.5f;
 
-	m_healthBarBackground.setSize(sf::Vector2f(64.0f, 12.0f));
-	m_healthBarBackground.setFillColor(sf::Color(0, 0, 0, 160));
-	m_healthBarBackground.setOrigin(m_healthBarBackground.getSize() / 2.0f);
-	m_healthBarBackground.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
-	m_healthBar.setSize(sf::Vector2f(60.0f, 8.0f));
-	m_healthBar.setFillColor(sf::Color(0, 255, 0, 160));
-	m_healthBar.setOrigin(m_healthBar.getSize() / 2.0f);
-	m_healthBar.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
+	//m_healthBarBackground.setSize(sf::Vector2f(64.0f, 12.0f));
+	//m_healthBarBackground.setFillColor(sf::Color(0, 0, 0, 160));
+	//m_healthBarBackground.setOrigin(m_healthBarBackground.getSize() / 2.0f);
+	//m_healthBarBackground.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
+	//m_healthBar.setSize(sf::Vector2f(60.0f, 8.0f));
+	//m_healthBar.setFillColor(sf::Color(0, 255, 0, 160));
+	//m_healthBar.setOrigin(m_healthBar.getSize() / 2.0f);
+	//m_healthBar.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
 
 	m_hitbox.setSize(sf::Vector2f(60.0f, 90.0f));
 	m_hitbox.setOrigin(m_hitbox.getSize() / 2.0f);
@@ -51,8 +51,8 @@ void Player::update()
 	checkInput();
 	//checkState();
 
-	m_healthBarBackground.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
-	m_healthBar.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
+	//m_healthBarBackground.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
+	//m_healthBar.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
 
 	if (m_playerState != m_previousState)
 	{
@@ -71,8 +71,8 @@ void Player::update()
 
 void Player::render(sf::RenderWindow& t_window)
 {
-	t_window.draw(m_healthBarBackground);
-	t_window.draw(m_healthBar);
+	//t_window.draw(m_healthBarBackground);
+	//t_window.draw(m_healthBar);
 
 	t_window.draw(m_hitbox);
 	t_window.draw(m_sprite);	
@@ -110,6 +110,18 @@ void Player::checkInput()
 	{
 		m_velocity.y = -10.0f;
 		m_playerState = PlayerState::Jumping;
+	}
+
+	if (m_hasDoubleJump)
+	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)
+			&& m_playerState != PlayerState::Jumping
+			&& m_doubleJumpReady)
+		{
+			m_velocity.y = -10.0f;
+			m_playerState = PlayerState::Jumping;
+			m_doubleJumpReady = false;
+		}
 	}
 	
 	if (m_position.y < m_groundLevel)
@@ -261,6 +273,7 @@ bool Player::checkGroundCollisions(Tile& t_tile)
 		&& bottomRight.y < t_tile.getCenter().y)
 	{
 		calculateGroundLevel(t_tile);
+		m_doubleJumpReady = true;
 		return true;
 	}
 
@@ -275,6 +288,25 @@ void Player::calculateGroundLevel(Tile& t_tile)
 void Player::setGroundLevel(float t_groundLevel)
 {
 	m_groundLevel = t_groundLevel;
+}
+
+void Player::addKeyItem()
+{
+	m_keyItemCount++;
+
+	switch (m_keyItemCount)
+	{
+		case 1:
+			std::cout << "Key item collected: " << m_keyItemCount << "\tDouble Jump\n";
+			m_hasDoubleJump = true;
+			break;
+		case 2:
+			std::cout << "Key item collected: " << m_keyItemCount << "\tDash\n";
+			//TO BE ADDED
+			break;
+		default:
+			break;
+	}
 }
 
 void Player::animate()
