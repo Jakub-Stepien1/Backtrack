@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuButton.cpp" />
     <ClCompile Include="Pickup.cpp" />
@@ -30,6 +31,7 @@
   <ItemGroup>
     <ClInclude Include="Game.h" />
     <ClInclude Include="GlobalConstants.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="MenuButton.h" />
     <ClInclude Include="Pickup.h" />
     <ClInclude Include="Player.h" />

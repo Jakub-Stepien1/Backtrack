@@ -49,11 +49,13 @@ private:
 	void updateMenu(sf::Time t_deltaTime);
 	void updateLevelEditor(sf::Time t_deltaTime);
 	void updateGameplay(sf::Time t_deltaTime);
+	void updatePause(sf::Time t_deltaTime);
 
 	void renderTitleScreen();
 	void renderMenu();
 	void renderLevelEditor();
 	void renderGameplay();
+	void renderPause();
 
 	void setup();
 	
@@ -118,7 +120,10 @@ private:
 
 	Pickup* m_keyItem;
 
+	sf::Clock m_gameTime;
+
 	sf::Texture m_tileSetTexture;
+	sf::Texture m_doubleJumpPotionTexture;
 	
 	sf::Texture m_logoTexture;
 	sf::Sprite m_logoSprite{ m_logoTexture };
@@ -147,9 +152,6 @@ private:
 
 	sf::Texture m_background4Texture;
 	sf::Sprite m_background4Sprite{ m_background4Texture };
-
-	sf::Texture m_background5Texture;
-	sf::Sprite m_background5Sprite{ m_background5Texture };
 
 	sf::View m_defaultView;
 	sf::View m_playerView;

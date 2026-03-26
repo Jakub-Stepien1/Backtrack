@@ -94,6 +94,18 @@ void Game::processKeys(const std::optional<sf::Event> t_event)
 		changeGameState(Gamestate::Menu);
 	}
 
+	if (sf::Keyboard::Key::Tab == newKeypress->code)
+	{
+		if (m_currentGameState == Gameplay)
+		{
+			changeGameState(Gamestate::Pause);
+		}
+		else if (m_currentGameState == Pause)
+		{
+			changeGameState(Gamestate::Gameplay);
+		}
+	}
+
 	if (m_currentGameState == TitleScreen)
 	{
 		changeGameState(Gamestate::Menu);
@@ -121,6 +133,7 @@ void Game::update(sf::Time t_deltaTime)
 		updateGameplay(t_deltaTime);
 		break;
 	case Pause:
+		updatePause(t_deltaTime);
 		break;
 	case Dialogue:
 		break;
@@ -151,6 +164,7 @@ void Game::render()
 		renderGameplay();
 		break;
 	case Pause:
+		renderPause();
 		break;
 	case Dialogue:
 		break;
@@ -321,13 +335,19 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 
 	if (m_keyItem != nullptr)
 	{
+		m_keyItem->update(m_gameTime);
 		if (m_keyItem->collidesWithPlayer(m_player.getPosition()))
 		{
-			m_player.addKeyItem();
+			m_player.getInventory().addItem(m_keyItem->getTexture());
+			m_player.checkNewItem();
 			delete m_keyItem;
 			m_keyItem = nullptr;
 		}
 	}
+}
+
+void Game::updatePause(sf::Time t_deltaTime)
+{
 }
 
 void Game::renderTitleScreen()
@@ -368,7 +388,6 @@ void Game::renderGameplay()
 	m_window.draw(m_background2Sprite);
 	m_window.draw(m_background3Sprite);
 	m_window.draw(m_background4Sprite);
-	m_window.draw(m_background5Sprite);
 
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
@@ -389,6 +408,11 @@ void Game::renderGameplay()
 	m_player.render(m_window);
 }
 
+void Game::renderPause()
+{
+	m_player.getInventory().render(m_window);
+}
+
 /// <summary>
 /// load the font and setup the text message for screen
 /// </summary>
@@ -405,28 +429,28 @@ void Game::setup()
 
 void Game::setupImages()
 {
-	if (!m_titleScreenBackgroundTexture.loadFromFile("ASSETS\\IMAGES\\title-background.png"))
+	if (!m_titleScreenBackgroundTexture.loadFromFile("ASSETS\\IMAGES\\Menus\\title-background.png"))
 	{
 		std::cout << "problem loading title screen background" << std::endl;
 	}
 	m_titleScreenBackgroundSprite.setTexture(m_titleScreenBackgroundTexture, true);
 	m_titleScreenBackgroundSprite.setScale(sf::Vector2f(0.5f, 0.5f));
 
-	if (!m_titleScreenParticlesTexture.loadFromFile("ASSETS\\IMAGES\\title-sparkle.png"))
+	if (!m_titleScreenParticlesTexture.loadFromFile("ASSETS\\IMAGES\\Menus\\title-sparkle.png"))
 	{
 		std::cout << "problem loading title screen particles" << std::endl;
 	}
 	m_titleScreenParticlesSprite.setTexture(m_titleScreenParticlesTexture, true);
 	m_titleScreenParticlesSprite.setScale(sf::Vector2f(0.5f, 0.5f));
 
-	if (!m_titleScreenCatTexture.loadFromFile("ASSETS\\IMAGES\\title-cat.png"))
+	if (!m_titleScreenCatTexture.loadFromFile("ASSETS\\IMAGES\\Menus\\title-cat.png"))
 	{
 		std::cout << "problem loading title screen cat" << std::endl;
 	}
 	m_titleScreenCatSprite.setTexture(m_titleScreenCatTexture, true);
 	m_titleScreenCatSprite.setScale(sf::Vector2f(0.5f, 0.5f));
 
-	if (!m_logoTexture.loadFromFile("ASSETS\\IMAGES\\logo-title.png"))
+	if (!m_logoTexture.loadFromFile("ASSETS\\IMAGES\\Menus\\logo-title.png"))
 	{
 		std::cout << "problem loading menu logo image" << std::endl;
 	}
@@ -435,18 +459,13 @@ void Game::setupImages()
 	m_logoSprite.setPosition(sf::Vector2f(500.0f, 250.0f));
 	m_logoSprite.setOrigin(m_logoSprite.getGlobalBounds().getCenter());
 
-	if (!m_menuBackgroundTexture.loadFromFile("ASSETS\\IMAGES\\background-menu.png"))
+	if (!m_menuBackgroundTexture.loadFromFile("ASSETS\\IMAGES\\Menus\\background-menu.png"))
 	{
 		std::cout << "problem loading menu background" << std::endl;
 	}
 	m_menuBackgroundSprite.setTexture(m_menuBackgroundTexture, true);
 
-	if (!m_tileSetTexture.loadFromFile("ASSETS\\IMAGES\\terrain18px-sheet.png"))
-	{
-		std::cout << "problem loading tileset" << std::endl;
-	}
-
-	if (!m_background1Texture.loadFromFile("ASSETS\\IMAGES\\skybox1.png"))
+	if (!m_background1Texture.loadFromFile("ASSETS\\IMAGES\\Backgrounds\\skybox1.png"))
 	{
 		std::cout << "problem loading background layer 1" << std::endl;
 	}
@@ -455,7 +474,7 @@ void Game::setupImages()
 	m_background1Sprite.setScale(BACKGROUND_SCALE);
 	m_background1Sprite.setPosition(m_defaultView.getCenter());
 	
-	if (!m_background2Texture.loadFromFile("ASSETS\\IMAGES\\skybox2.png"))
+	if (!m_background2Texture.loadFromFile("ASSETS\\IMAGES\\Backgrounds\\skybox2.png"))
 	{
 		std::cout << "problem loading background layer 2" << std::endl;
 	}
@@ -464,7 +483,7 @@ void Game::setupImages()
 	m_background2Sprite.setScale(BACKGROUND_SCALE);
 	m_background2Sprite.setPosition(m_defaultView.getCenter());
 	
-	if (!m_background3Texture.loadFromFile("ASSETS\\IMAGES\\skybox3.png"))
+	if (!m_background3Texture.loadFromFile("ASSETS\\IMAGES\\Backgrounds\\skybox3.png"))
 	{
 		std::cout << "problem loading background layer 3" << std::endl;
 	}
@@ -473,7 +492,7 @@ void Game::setupImages()
 	m_background3Sprite.setScale(BACKGROUND_SCALE);
 	m_background3Sprite.setPosition(m_defaultView.getCenter());
 
-	if (!m_background4Texture.loadFromFile("ASSETS\\IMAGES\\skybox4.png"))
+	if (!m_background4Texture.loadFromFile("ASSETS\\IMAGES\\Backgrounds\\skybox4.png"))
 	{
 		std::cout << "problem loading background layer 4" << std::endl;
 	}
@@ -482,14 +501,15 @@ void Game::setupImages()
 	m_background4Sprite.setScale(BACKGROUND_SCALE);
 	m_background4Sprite.setPosition(m_defaultView.getCenter());
 
-	if (!m_background5Texture.loadFromFile("ASSETS\\IMAGES\\skybox5.png"))
+	if (!m_tileSetTexture.loadFromFile("ASSETS\\IMAGES\\Tilesets\\terrain18px-sheet.png"))
 	{
-		std::cout << "problem loading background layer 5" << std::endl;
+		std::cout << "problem loading tileset" << std::endl;
 	}
-	m_background5Sprite.setTexture(m_background5Texture, true);
-	m_background5Sprite.setOrigin(m_background5Sprite.getGlobalBounds().getCenter());
-	m_background5Sprite.setScale(BACKGROUND_SCALE);
-	m_background5Sprite.setPosition(m_defaultView.getCenter());
+
+	if (!m_doubleJumpPotionTexture.loadFromFile("ASSETS\\IMAGES\\Items\\Potions\\potion1.png"))
+	{
+		std::cout << "problem loading double jump potion" << std::endl;
+	}
 }
 
 void Game::setupFonts()
@@ -553,19 +573,6 @@ void Game::setupGameplay()
 {
 	m_currentLevel = 1;
 	loadLevel(m_currentLevel);
-
-	for (int row = 0; row < TILE_ROWS; row++)
-	{
-		for (int col = 0; col < TILE_COLS; col++)
-		{
-			SurroundingTiles surrounding{ 0,0,0,0,0,0,0,0 };
-			surrounding = getSurroundingTiles(row, col);
-
-			m_tiles[row][col].setTile(m_grid[row][col], surrounding);
-			m_tiles[row][col].setPosition(sf::Vector2f((col - 1) * 18 * TILE_SCALE, (row - 1) * 18 * TILE_SCALE)); // offset by one tile to account for offscreen tiles
-			m_tiles[row][col].setTexture(m_tileSetTexture);
-		}
-	}
 }
 
 void Game::changeGameState(Gamestate t_newState)
@@ -589,6 +596,7 @@ void Game::changeGameState(Gamestate t_newState)
 		m_currentGameState = Gameplay;
 		break;
 	case Pause:
+		m_window.setView(m_defaultView);
 		m_currentGameState = Pause;
 		break;
 	case Dialogue:
@@ -634,7 +642,7 @@ void Game::parallaxBackground(sf::Time t_deltaTime)
 	sf::Vector2f viewCenter = m_playerView.getCenter();
 	sf::Vector2f defaultCenter = m_defaultView.getCenter();
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		float parallaxSpeed = t_deltaTime.asSeconds() * (5.0f + i * 4.0f);
 		sf::Vector2f backgroundPos = defaultCenter + (viewCenter - defaultCenter) * parallaxSpeed;
@@ -642,18 +650,15 @@ void Game::parallaxBackground(sf::Time t_deltaTime)
 		switch (i)
 		{
 		case 0:
-			m_background5Sprite.setPosition(backgroundPos);
-			break;
-		case 1:
 			m_background4Sprite.setPosition(backgroundPos);
 			break;
-		case 2:
+		case 1:
 			m_background3Sprite.setPosition(backgroundPos);
 			break;
-		case 3:
+		case 2:
 			m_background2Sprite.setPosition(backgroundPos);
 			break;
-		case 4:
+		case 3:
 			m_background1Sprite.setPosition(backgroundPos);
 			break;
 		default:
@@ -667,26 +672,6 @@ void Game::progressLevel()
 	m_currentLevel += 1;
 	m_player.setToLevelStart();
 	loadLevel(m_currentLevel);
-
-	for (int row = 0; row < TILE_ROWS; row++)
-	{
-		for (int col = 0; col < TILE_COLS; col++)
-		{
-			SurroundingTiles surrounding{ 0,0,0,0,0,0,0,0 };
-			surrounding = getSurroundingTiles(row, col);
-
-			m_tiles[row][col].setTile(m_grid[row][col], surrounding);
-			m_tiles[row][col].setPosition(sf::Vector2f((col - 1) * 18 * TILE_SCALE, (row - 1) * 18 * TILE_SCALE)); // offset by one tile to account for offscreen tiles
-			m_tiles[row][col].setTexture(m_tileSetTexture);
-		}
-	}
-
-	if (m_currentLevel == 2)
-	{
-		m_keyItem = new Pickup();
-		m_keyItem->setPosition(sf::Vector2f(650.0f, 300.0f));
-	}
-
 }
 
 SurroundingTiles Game::getSurroundingTiles(int t_row, int t_col)
@@ -752,4 +737,24 @@ void Game::loadLevel(int t_level)
 	}
 
 	file.close();
+
+	for (int row = 0; row < TILE_ROWS; row++)
+	{
+		for (int col = 0; col < TILE_COLS; col++)
+		{
+			SurroundingTiles surrounding{ 0,0,0,0,0,0,0,0 };
+			surrounding = getSurroundingTiles(row, col);
+
+			m_tiles[row][col].passTexture(m_tileSetTexture);
+			m_tiles[row][col].setTile(m_grid[row][col], surrounding);
+			m_tiles[row][col].setPosition(sf::Vector2f((col - 1) * 18 * TILE_SCALE, (row - 1) * 18 * TILE_SCALE)); // offset by one tile to account for offscreen tiles	
+		}
+	}
+
+	if (m_currentLevel == 2)
+	{
+		m_keyItem = new Pickup();
+		m_keyItem->passTexture(m_doubleJumpPotionTexture);
+		m_keyItem->setPosition(sf::Vector2f(650.0f, 300.0f));
+	}
 }

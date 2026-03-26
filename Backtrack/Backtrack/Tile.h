@@ -30,8 +30,8 @@ public:
 
 	void setTile(int t_tile, SurroundingTiles t_surrounding);
 	void setPosition(sf::Vector2f t_position);
-	void setTexture(sf::Texture& t_texture);
-	void setTextureRect(SurroundingTiles t_surrounding, int t_tileType);
+	void passTexture(sf::Texture& t_texture);
+	void setTileRect(SurroundingTiles t_surrounding, int t_tileType);
 
 	bool isMouseOver(sf::Vector2i t_mousePos);
 
@@ -41,13 +41,13 @@ public:
 
 	sf::Vector2f getPosition();
 	sf::Vector2f getCenter();
-	sf::RectangleShape getShape();
+	const sf::RectangleShape& getShape();
 
 private:
 	sf::Vector2f position;
 
-	sf::Texture texture;
-	sf::Sprite sprite{ texture };
+	sf::Texture* texture{ nullptr };
+	std::optional<sf::Sprite> sprite;
 
 	sf::IntRect tileRect;
 

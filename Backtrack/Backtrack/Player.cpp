@@ -1,7 +1,7 @@
 #include "Player.h"
 
 Player::Player() : 
-	m_texture("ASSETS\\IMAGES\\all48x61-playerSheet.png"),
+	m_texture("ASSETS\\IMAGES\\Characters\\all48x61-playerSheet.png"),
 	m_sprite(m_texture)
 {
 	m_frameSize = sf::Vector2i(48, 61);
@@ -39,7 +39,10 @@ Player::Player() :
 	m_sprite.setTextureRect(sf::IntRect(sf::Vector2i(0.0f, 0.0f), m_frameSize));
 	m_sprite.setOrigin(sf::Vector2f(48.0f / 2.0f, 61.0f / 2.0f));
 	m_sprite.setPosition(m_spritePosition);
-	m_sprite.setScale(sf::Vector2f(SCALE_FACTOR, SCALE_FACTOR));
+	m_sprite.setScale(sf::Vector2f(PLAYER_SCALE, PLAYER_SCALE));
+
+	m_doubleJumpReady = false;
+	m_hasDoubleJump = false;
 }
 
 Player::~Player()
@@ -83,7 +86,7 @@ void Player::checkInput()
 #pragma region Running
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 	{
-		m_sprite.setScale(sf::Vector2f(-SCALE_FACTOR, SCALE_FACTOR)); // Flip sprite left
+		m_sprite.setScale(sf::Vector2f(-PLAYER_SCALE, PLAYER_SCALE)); // Flip sprite left
 		m_velocity.x -= 0.5f;
 		if (m_playerState != PlayerState::Jumping 
 			&& m_playerState != PlayerState::Falling)
@@ -93,7 +96,7 @@ void Player::checkInput()
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 	{
-		m_sprite.setScale(sf::Vector2f(SCALE_FACTOR, SCALE_FACTOR)); // Flip sprite right
+		m_sprite.setScale(sf::Vector2f(PLAYER_SCALE, PLAYER_SCALE)); // Flip sprite right
 		m_velocity.x += 0.5f;
 		if (m_playerState != PlayerState::Jumping 
 			&& m_playerState != PlayerState::Falling)
@@ -290,18 +293,17 @@ void Player::setGroundLevel(float t_groundLevel)
 	m_groundLevel = t_groundLevel;
 }
 
-void Player::addKeyItem()
+void Player::checkNewItem()
 {
-	m_keyItemCount++;
-
-	switch (m_keyItemCount)
+	int itemCount = m_inventory.getItemCount();
+	switch (itemCount)
 	{
 		case 1:
-			std::cout << "Key item collected: " << m_keyItemCount << "\tDouble Jump\n";
+			std::cout << "Key item collected: " << itemCount << "\tDouble Jump\n";
 			m_hasDoubleJump = true;
 			break;
 		case 2:
-			std::cout << "Key item collected: " << m_keyItemCount << "\tDash\n";
+			std::cout << "Key item collected: " << itemCount << "\tDash\n";
 			//TO BE ADDED
 			break;
 		default:
@@ -424,4 +426,9 @@ sf::Vector2f Player::getPosition()
 PlayerState Player::getState()
 {
 	return m_playerState;
+}
+
+Inventory& Player::getInventory()
+{
+	return m_inventory;
 }

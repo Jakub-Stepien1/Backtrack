@@ -1,8 +1,7 @@
 #pragma once
 
-#include <iostream>
-#include <SFML/Graphics.hpp>
 #include "PlayerState.h"
+#include "Inventory.h"
 #include "Tile.h"
 
 enum class PlayerState
@@ -36,7 +35,7 @@ public:
 
 	void setGroundLevel(float t_groundLevel);
 
-	void addKeyItem();
+	void checkNewItem();
 
 	void animate();
 	void playAnimationOnce();
@@ -47,10 +46,9 @@ public:
 
 	sf::Vector2f getPosition();
 	PlayerState getState();
+	Inventory& getInventory();
 
 private:
-	const float SCALE_FACTOR = 2.0f;
-
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;
 
@@ -67,7 +65,7 @@ private:
 	sf::Vector2f m_velocity;
 	float m_speed;
 
-	int m_keyItemCount;
+	Inventory m_inventory;
 
 	bool m_hasDoubleJump;
 	bool m_doubleJumpReady;

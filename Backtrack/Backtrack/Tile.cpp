@@ -2,15 +2,11 @@
 
 Tile::Tile()
 {
-	sprite.setTexture(texture);
-
 	tileRect = sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(18, 18));
 
 	rectangle.setFillColor(sf::Color::Transparent);
 	rectangle.setOutlineColor(sf::Color(100,100,100));
 	rectangle.setSize(sf::Vector2f(18.0f * 2, 18.0f * 2));
-
-	sprite.setScale(sf::Vector2f(2.0f, 2.0f));
 
 	outlineVisible = false;
 	empty = true;
@@ -29,7 +25,7 @@ void Tile::render(sf::RenderWindow& t_window)
 	}
 	if (!empty)
 	{
-		t_window.draw(sprite);
+		t_window.draw(*sprite);
 	}
 }
 
@@ -44,7 +40,7 @@ void Tile::setTile(int t_tile, SurroundingTiles t_surrounding)
 	else
 	{
 		//rectangle.setFillColor(sf::Color::Black);
-		setTextureRect(t_surrounding, t_tile);
+		setTileRect(t_surrounding, t_tile);
 		empty = false;
 	}
 }
@@ -54,17 +50,18 @@ void Tile::setPosition(sf::Vector2f t_position)
 	position = t_position;
 
 	rectangle.setPosition(position);
-	sprite.setPosition(position);
+	sprite->setPosition(position);
 }
 
-void Tile::setTexture(sf::Texture& t_texture)
+void Tile::passTexture(sf::Texture& t_texture)
 {
-	texture = t_texture;
-	sprite.setTexture(texture);
-	sprite.setTextureRect(tileRect);
+	texture = &t_texture;
+	sprite.emplace(*texture);
+	sprite->setScale(sf::Vector2f(2.0f, 2.0f));
+	sprite->setTextureRect(tileRect);
 }
 
-void Tile::setTextureRect(SurroundingTiles t_surrounding, int t_tileType)
+void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 {
 	// Top Layer
 	if (t_surrounding.left == 0
@@ -303,7 +300,7 @@ void Tile::setTextureRect(SurroundingTiles t_surrounding, int t_tileType)
 		}*/
 	}
 
-	sprite.setTextureRect(tileRect);
+	sprite->setTextureRect(tileRect);
 }
 
 bool Tile::isMouseOver(sf::Vector2i t_mousePos)
@@ -347,7 +344,7 @@ sf::Vector2f Tile::getCenter()
 	return center;
 }
 
-sf::RectangleShape Tile::getShape()
+const sf::RectangleShape& Tile::getShape()
 {
 	return rectangle;
 }
