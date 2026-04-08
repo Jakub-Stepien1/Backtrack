@@ -50,7 +50,7 @@ std::string MenuButton::getText()
 	return text.getString();
 }
 
-bool MenuButton::isMouseOver(sf::Vector2i t_mousePos)
+bool MenuButton::isMouseOver(sf::Vector2f t_mousePos)
 {
 	sf::Vector2f mousePos = static_cast<sf::Vector2f>(t_mousePos);
 	if (rect.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))

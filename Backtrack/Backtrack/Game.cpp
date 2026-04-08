@@ -14,7 +14,7 @@ Game::Game() :
 	m_window{ sf::VideoMode{ sf::Vector2u{1368U, 768U}, 64U }, "Backtrack" }, // 1368x768 = 16:9 aspect ratio (38x21 tiles)
 	m_currentGameState{ Gamestate::TitleScreen },
 	m_defaultView{sf::FloatRect( sf::Vector2f(0, 0), sf::Vector2f(m_window.getSize().x, m_window.getSize().y)) },
-	m_playerView{ sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_window.getSize().x / 1.2f, m_window.getSize().y) / 1.2f) }
+	m_playerView{ sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_window.getSize().x / 1.2f, m_window.getSize().y / 1.2f)) }
 {
 	setup(); // load all resources and game data
 }
@@ -195,7 +195,7 @@ void Game::updateTitleScreen(sf::Time t_deltaTime)
 
 void Game::updateMenu(sf::Time t_deltaTime)
 {
-	sf::Vector2i mousePosition = sf::Mouse::getPosition(m_window);
+	sf::Vector2f mousePosition = m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window));
 	
 	for (MenuButton& button : m_menuButtons)
 	{
@@ -256,7 +256,7 @@ void Game::updateMenu(sf::Time t_deltaTime)
 
 void Game::updateLevelEditor(sf::Time t_deltaTime)
 {
-	sf::Vector2i mousePosition = sf::Mouse::getPosition(m_window);
+	sf::Vector2f mousePosition = m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window));
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1))
 	{
@@ -348,6 +348,7 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 
 void Game::updatePause(sf::Time t_deltaTime)
 {
+	m_player.getInventory().update(m_window);
 }
 
 void Game::renderTitleScreen()
@@ -410,6 +411,7 @@ void Game::renderGameplay()
 
 void Game::renderPause()
 {
+	renderGameplay();
 	m_player.getInventory().render(m_window);
 }
 
@@ -571,7 +573,7 @@ void Game::setupMenu()
 
 void Game::setupGameplay()
 {
-	m_currentLevel = 1;
+	m_currentLevel = 2;
 	loadLevel(m_currentLevel);
 }
 
@@ -596,8 +598,9 @@ void Game::changeGameState(Gamestate t_newState)
 		m_currentGameState = Gameplay;
 		break;
 	case Pause:
-		m_window.setView(m_defaultView);
+		m_window.setView(m_playerView);
 		m_currentGameState = Pause;
+		m_player.getInventory().centreOnScreen(m_playerView.getCenter());
 		break;
 	case Dialogue:
 		m_currentGameState = Dialogue;

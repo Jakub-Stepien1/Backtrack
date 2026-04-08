@@ -15,7 +15,7 @@ public:
 
 	std::string getText();
 
-	bool isMouseOver(sf::Vector2i t_mousePos);
+	bool isMouseOver(sf::Vector2f t_mousePos);
 
 	void hover();
 	void unhover();

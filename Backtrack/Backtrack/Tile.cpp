@@ -303,10 +303,9 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 	sprite->setTextureRect(tileRect);
 }
 
-bool Tile::isMouseOver(sf::Vector2i t_mousePos)
+bool Tile::isMouseOver(sf::Vector2f t_mousePos)
 {
-	sf::Vector2f mousePos = static_cast<sf::Vector2f>(t_mousePos);
-	if (rectangle.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+	if (rectangle.getGlobalBounds().contains(t_mousePos))
 	{
 		return true;
 	}

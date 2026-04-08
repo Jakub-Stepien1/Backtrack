@@ -33,7 +33,7 @@ public:
 	void passTexture(sf::Texture& t_texture);
 	void setTileRect(SurroundingTiles t_surrounding, int t_tileType);
 
-	bool isMouseOver(sf::Vector2i t_mousePos);
+	bool isMouseOver(sf::Vector2f t_mousePos);
 
 	void showOutline(bool t_show);
 
