@@ -14,7 +14,8 @@ Game::Game() :
 	m_window{ sf::VideoMode{ sf::Vector2u{1368U, 768U}, 64U }, "Backtrack" }, // 1368x768 = 16:9 aspect ratio (38x21 tiles)
 	m_currentGameState{ Gamestate::TitleScreen },
 	m_defaultView{sf::FloatRect( sf::Vector2f(0, 0), sf::Vector2f(m_window.getSize().x, m_window.getSize().y)) },
-	m_playerView{ sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_window.getSize().x / 1.2f, m_window.getSize().y / 1.2f)) }
+	m_playerView{ sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_window.getSize().x / 1.2f, m_window.getSize().y / 1.2f)) },
+	m_levelEditorView{ sf::FloatRect(sf::Vector2f(-75, -50), sf::Vector2f(m_window.getSize().x / 0.9f, m_window.getSize().y / 0.9f)) }
 {
 	setup(); // load all resources and game data
 }
@@ -67,7 +68,7 @@ void Game::processEvents()
 		{
 			m_window.close();
 		}
-		if (newEvent->is<sf::Event::KeyPressed>()) //user pressed a key
+		if (newEvent->is<sf::Event::KeyPressed>()) // user pressed a key
 		{
 			processKeys(newEvent);
 		}
@@ -96,7 +97,7 @@ void Game::processKeys(const std::optional<sf::Event> t_event)
 
 	if (sf::Keyboard::Key::Tab == newKeypress->code)
 	{
-		if (m_currentGameState == Gameplay)
+		if (m_currentGameState == Gamestate::Gameplay)
 		{
 			changeGameState(Gamestate::Pause);
 		}
@@ -106,7 +107,15 @@ void Game::processKeys(const std::optional<sf::Event> t_event)
 		}
 	}
 
-	if (m_currentGameState == TitleScreen)
+	if (m_currentGameState == Gamestate::LevelEditor)
+	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+		{
+			saveLevel();
+		}
+	}
+
+	if (m_currentGameState == Gamestate::TitleScreen)
 	{
 		changeGameState(Gamestate::Menu);
 	}
@@ -222,6 +231,11 @@ void Game::updateMenu(sf::Time t_deltaTime)
 						for (int col = 0; col < TILE_COLS; col++)
 						{
 							m_tiles[row][col].showOutline(true);
+							if (row == 0 || row == TILE_ROWS - 1
+								|| col == 0 || col == TILE_COLS - 1)
+							{
+								m_tiles[row][col].setOutlineColour(sf::Color::Red);
+							}
 						}
 					}
 					changeGameState(Gamestate::LevelEditor);
@@ -590,7 +604,7 @@ void Game::changeGameState(Gamestate t_newState)
 		m_currentGameState = Menu;
 		break;
 	case LevelEditor:
-		m_window.setView(m_defaultView);
+		m_window.setView(m_levelEditorView);
 		m_currentGameState = LevelEditor;
 		break;
 	case Gameplay:
@@ -717,6 +731,28 @@ SurroundingTiles Game::getSurroundingTiles(int t_row, int t_col)
 	}
 
 	return surrounding;
+}
+
+void Game::saveLevel()
+{
+	std::ofstream file("ASSETS\\LEVELS\\newLevel.txt");
+	if (!file.is_open())
+	{
+		std::cout << "Error opening level file for writing: ASSETS\\LEVELS\\newlevel.txt" << std::endl;
+		return;
+	}
+
+	std::cout << "Saving level to file: ASSETS\\LEVELS\\newLevel.txt" << std::endl;
+
+	for (int row = 0; row < TILE_ROWS; row++)
+	{
+		for (int col = 0; col < TILE_COLS; col++)
+		{
+			file << m_grid[row][col] << " ";
+		}
+		file << "\n";
+	}
+	file.close();
 }
 
 void Game::loadLevel(int t_level)

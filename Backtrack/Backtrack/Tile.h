@@ -39,6 +39,8 @@ public:
 
 	float distanceToTile(sf::Vector2f t_playerPos);
 
+	void setOutlineColour(sf::Color t_colour);
+
 	sf::Vector2f getPosition();
 	sf::Vector2f getCenter();
 	const sf::RectangleShape& getShape();

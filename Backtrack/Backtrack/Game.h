@@ -74,6 +74,7 @@ private:
 
 	SurroundingTiles getSurroundingTiles(int t_row, int t_col);
 
+	void saveLevel();
 	void loadLevel(int t_level);
 
 	Gamestate m_currentGameState;
@@ -155,6 +156,7 @@ private:
 
 	sf::View m_defaultView;
 	sf::View m_playerView;
+	sf::View m_levelEditorView;
 
 };
 

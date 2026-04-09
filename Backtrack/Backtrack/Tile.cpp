@@ -332,6 +332,11 @@ float Tile::distanceToTile(sf::Vector2f t_playerPos)
 	return distance;
 }
 
+void Tile::setOutlineColour(sf::Color t_colour)
+{
+	rectangle.setOutlineColor(t_colour);
+}
+
 sf::Vector2f Tile::getPosition()
 {
 	return position;
