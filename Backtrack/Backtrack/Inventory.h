@@ -23,7 +23,7 @@ public:
 	~Inventory();
 
 	void update(sf::RenderWindow& t_window);
-	void render(sf::RenderWindow& t_window);
+	void render(sf::RenderWindow& t_window, std::vector<sf::Sprite>& t_hearts);
 
 	void addItem(sf::Texture* t_item);
 	void centreOnScreen(sf::Vector2f t_viewPosition);
@@ -41,7 +41,7 @@ private:
 
 	sf::Texture m_highlightTexture;
 	sf::Sprite m_highlightSprite;
-	
+
 	sf::Vector2f m_position;
 
 	std::vector<Item> m_items;

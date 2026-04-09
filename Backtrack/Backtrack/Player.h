@@ -22,7 +22,7 @@ public:
 	Player();
 	~Player();
 
-	void update();
+	void update(sf::Vector2f t_viewPos);
 	void render(sf::RenderWindow& t_window);
 
 	void checkInput();
@@ -37,6 +37,8 @@ public:
 
 	void checkNewItem();
 
+	void updateHearts(sf::Vector2f t_viewPos);
+
 	void animate();
 	void playAnimationOnce();
 	void addFrame(sf::IntRect& t_frame);
@@ -44,6 +46,7 @@ public:
 
 	void setToLevelStart();
 
+	std::vector<sf::Sprite>& getHearts();
 	sf::Vector2f getPosition();
 	PlayerState getState();
 	Inventory& getInventory();
@@ -52,13 +55,13 @@ private:
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;
 
+	sf::Texture m_heartTexture;
+	std::vector<sf::Sprite> m_heartSprites;
+
 	sf::RectangleShape m_hitbox;
 
-	/*int m_maxHealth;
+	int m_maxHealth;
 	int m_health;
-
-	sf::RectangleShape m_healthBarBackground;
-	sf::RectangleShape m_healthBar;*/
 
 	sf::Vector2f m_position;
 	sf::Vector2f m_spritePosition;

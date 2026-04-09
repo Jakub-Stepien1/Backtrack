@@ -331,7 +331,7 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 		progressLevel();
 	}
 
-	m_player.update();
+	m_player.update(m_playerView.getCenter());
 
 	if (m_keyItem != nullptr)
 	{
@@ -412,7 +412,7 @@ void Game::renderGameplay()
 void Game::renderPause()
 {
 	renderGameplay();
-	m_player.getInventory().render(m_window);
+	m_player.getInventory().render(m_window, m_player.getHearts());
 }
 
 /// <summary>

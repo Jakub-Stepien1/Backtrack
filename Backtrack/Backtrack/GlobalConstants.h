@@ -11,6 +11,9 @@ static const float PLAYER_SCALE = 2.0f;
 static const int TILE_ROWS = 23; // 21 + 2 offscreen (1 on each side)
 static const int TILE_COLS = 40; // 38 + 2 offscreen (1 on each side)
 
+const sf::IntRect HEART_EMPTY{ sf::Vector2i(0, 0), sf::Vector2i(17, 16) };
+const sf::IntRect HEART_FULL{ sf::Vector2i(34, 0), sf::Vector2i(17, 16) };
+
 ///////////////////////////////////////////////// Tile texture rectangles /////////////////////////////////////////////////
 
 // Grass Tiles

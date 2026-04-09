@@ -2,7 +2,8 @@
 
 Player::Player() : 
 	m_texture("ASSETS\\IMAGES\\Characters\\all48x61-playerSheet.png"),
-	m_sprite(m_texture)
+	m_sprite(m_texture),
+	m_heartTexture("ASSETS\\IMAGES\\Items\\Hearts\\hearts.png")
 {
 	m_frameSize = sf::Vector2i(48, 61);
 	m_playerTime = sf::seconds(0.15f);
@@ -11,21 +12,12 @@ Player::Player() :
 	m_previousState = PlayerState::None;
 	m_playerState = PlayerState::Idle;
 
-	//m_maxHealth = 2;
-	//m_health = m_maxHealth;
+	m_maxHealth = 2;
+	m_health = m_maxHealth;
 
 	m_position = sf::Vector2f(100.0f, 400.0f);
 	m_spritePosition = sf::Vector2f(m_position.x + 6.0f, m_position.y - 6.0f);
 	m_speed = 1.5f;
-
-	//m_healthBarBackground.setSize(sf::Vector2f(64.0f, 12.0f));
-	//m_healthBarBackground.setFillColor(sf::Color(0, 0, 0, 160));
-	//m_healthBarBackground.setOrigin(m_healthBarBackground.getSize() / 2.0f);
-	//m_healthBarBackground.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
-	//m_healthBar.setSize(sf::Vector2f(60.0f, 8.0f));
-	//m_healthBar.setFillColor(sf::Color(0, 255, 0, 160));
-	//m_healthBar.setOrigin(m_healthBar.getSize() / 2.0f);
-	//m_healthBar.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
 
 	m_hitbox.setSize(sf::Vector2f(60.0f, 90.0f));
 	m_hitbox.setOrigin(m_hitbox.getSize() / 2.0f);
@@ -41,6 +33,16 @@ Player::Player() :
 	m_sprite.setPosition(m_spritePosition);
 	m_sprite.setScale(sf::Vector2f(PLAYER_SCALE, PLAYER_SCALE));
 
+	for (int i = 0; i < m_maxHealth; i++)
+	{
+		sf::Sprite heartContainer{ m_heartTexture };
+		heartContainer.setTextureRect(HEART_EMPTY);
+		heartContainer.setOrigin(heartContainer.getGlobalBounds().getCenter());
+		heartContainer.setPosition(sf::Vector2f(m_position.x - 100.0f + i * 60.0f, m_position.y - 100.0f));
+		heartContainer.setScale(sf::Vector2f(3.0f, 3.0f));
+		m_heartSprites.push_back(heartContainer);
+	}
+
 	m_doubleJumpReady = false;
 	m_hasDoubleJump = false;
 }
@@ -49,13 +51,12 @@ Player::~Player()
 {
 }
 
-void Player::update()
+void Player::update(sf::Vector2f t_viewPos)
 {
 	checkInput();
 	//checkState();
 
-	//m_healthBarBackground.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
-	//m_healthBar.setPosition(sf::Vector2f(m_position.x, m_position.y - 64.0f));
+	updateHearts(t_viewPos);
 
 	if (m_playerState != m_previousState)
 	{
@@ -74,11 +75,13 @@ void Player::update()
 
 void Player::render(sf::RenderWindow& t_window)
 {
-	//t_window.draw(m_healthBarBackground);
-	//t_window.draw(m_healthBar);
-
 	t_window.draw(m_hitbox);
 	t_window.draw(m_sprite);	
+
+	for (const sf::Sprite& heart : m_heartSprites)
+	{
+		t_window.draw(heart);
+	}
 }
 
 void Player::checkInput()
@@ -311,6 +314,28 @@ void Player::checkNewItem()
 	}
 }
 
+void Player::updateHearts(sf::Vector2f t_viewPos)
+{
+	float offset = 0.0f;
+	for (sf::Sprite& heart : m_heartSprites)
+	{
+		heart.setPosition(sf::Vector2f(t_viewPos.x - 500.0f + offset * 50.0f, t_viewPos.y - 250.0f));
+		offset++;
+	}
+
+	for (int i = 0; i < m_maxHealth; i++)
+	{
+		if (i < m_health)
+		{
+			m_heartSprites[i].setTextureRect(HEART_FULL);
+		}
+		else
+		{
+			m_heartSprites[i].setTextureRect(HEART_EMPTY);
+		}
+	}
+}
+
 void Player::animate()
 {
 	if (!m_playerFrames.empty())
@@ -416,6 +441,11 @@ void Player::setToLevelStart()
 {
 	m_position = sf::Vector2f(50.0f, m_position.y);
 
+}
+
+std::vector<sf::Sprite>& Player::getHearts()
+{
+	return m_heartSprites;
 }
 
 sf::Vector2f Player::getPosition()

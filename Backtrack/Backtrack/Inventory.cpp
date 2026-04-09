@@ -74,7 +74,7 @@ void Inventory::update(sf::RenderWindow& t_window)
 	}
 }
 
-void Inventory::render(sf::RenderWindow& t_window)
+void Inventory::render(sf::RenderWindow& t_window, std::vector<sf::Sprite>& t_hearts)
 {
 	t_window.draw(m_inventoryBackground);
 	t_window.draw(m_inventorySprite);
@@ -82,6 +82,15 @@ void Inventory::render(sf::RenderWindow& t_window)
 	for (Item& item : m_items)
 	{
 		t_window.draw(item.sprite);
+	}
+
+	float offset = 0.0f;
+	for (sf::Sprite& heart : t_hearts)
+	{
+		heart.setPosition(sf::Vector2f(m_position.x - 312.0f + offset * 50.0f, m_position.y - 172.0f));
+		offset++;
+
+		t_window.draw(heart);
 	}
 
 	if (m_hoveringItem)
@@ -126,7 +135,7 @@ void Inventory::centreOnScreen(sf::Vector2f t_viewPosition)
 		}
 		else
 		{
-			m_items[i].sprite.setPosition(m_itemStartPos + sf::Vector2f((i - 3) * m_itemOffset, 81.0f));
+			m_items[i].sprite.setPosition(m_itemStartPos + sf::Vector2f((i - 3) * m_itemOffset, 74.0f));
 		}
 	}
 }
