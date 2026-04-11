@@ -312,11 +312,12 @@ void Game::updateLevelEditor(sf::Time t_deltaTime)
 
 void Game::updateGameplay(sf::Time t_deltaTime)
 {
-	bool noGroundCollision = true;
-
 	handleCameraMovement(t_deltaTime);
 	parallaxBackground(t_deltaTime);
 
+	m_player.checkInput();
+
+	m_player.applyVelocityX();
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
 		for (int col = 0; col < TILE_COLS; col++)
@@ -324,28 +325,31 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 			if (m_grid[row][col] != 0
 				&& m_tiles[row][col].distanceToTile(m_player.getPosition()) < 150)
 			{
-				m_player.checkCeilingCollisions(m_tiles[row][col]);
-				m_player.checkSideCollisions(m_tiles[row][col]);
-
-				if (m_player.checkGroundCollisions(m_tiles[row][col]))
-				{
-					noGroundCollision = false;
-				}
+				m_player.checkCollisionX(m_tiles[row][col]);
 			}
 		}
 	}
-
-	if (noGroundCollision)
+	
+	m_player.setOnGround(false);
+	m_player.applyVelocityY();
+	for (int row = 0; row < TILE_ROWS; row++)
 	{
-		m_player.setGroundLevel(2000.0f);
+		for (int col = 0; col < TILE_COLS; col++)
+		{
+			if (m_grid[row][col] != 0
+				&& m_tiles[row][col].distanceToTile(m_player.getPosition()) < 150)
+			{
+				m_player.checkCollisionY(m_tiles[row][col]);
+			}
+		}
 	}
+	
+	m_player.update(m_playerView.getCenter());
 
 	if (m_player.getPosition().x > 1368.0f)
 	{
 		progressLevel();
 	}
-
-	m_player.update(m_playerView.getCenter());
 
 	if (m_keyItem != nullptr)
 	{
@@ -587,7 +591,7 @@ void Game::setupMenu()
 
 void Game::setupGameplay()
 {
-	m_currentLevel = 2;
+	m_currentLevel = 1;
 	loadLevel(m_currentLevel);
 }
 
@@ -790,7 +794,7 @@ void Game::loadLevel(int t_level)
 		}
 	}
 
-	if (m_currentLevel == 2)
+	if (m_currentLevel == 5)
 	{
 		m_keyItem = new Pickup();
 		m_keyItem->passTexture(m_doubleJumpPotionTexture);

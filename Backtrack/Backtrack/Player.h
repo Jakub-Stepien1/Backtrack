@@ -16,6 +16,15 @@ enum class PlayerState
 	WallSliding
 };
 
+enum class CollisionSide {
+	None, Top, Bottom, Left, Right
+};
+
+struct CollisionResult {
+	bool collided;
+	CollisionSide side;
+};
+
 class Player
 {
 public:
@@ -28,12 +37,12 @@ public:
 	void checkInput();
 	void checkState();
 
-	void checkCeilingCollisions(Tile& t_tile);
-	void checkSideCollisions(Tile& t_tile);
-	bool checkGroundCollisions(Tile& t_tile);
-	void calculateGroundLevel(Tile& t_tile);
+	void applyVelocityX();
+	void applyVelocityY();
 
-	void setGroundLevel(float t_groundLevel);
+	void checkCollisionX(Tile& t_tile);
+	void checkCollisionY(Tile& t_tile);
+	CollisionResult getCollisionSide(Tile& t_tile);
 
 	void checkNewItem();
 
@@ -45,6 +54,8 @@ public:
 	void setFrames();
 
 	void setToLevelStart();
+
+	void setOnGround(bool t_onGround);
 
 	std::vector<sf::Sprite>& getHearts();
 	sf::Vector2f getPosition();
@@ -66,14 +77,14 @@ private:
 	sf::Vector2f m_position;
 	sf::Vector2f m_spritePosition;
 	sf::Vector2f m_velocity;
-	float m_speed;
+	sf::Vector2f m_speed;
 
 	Inventory m_inventory;
 
 	bool m_hasDoubleJump;
 	bool m_doubleJumpReady;
 
-	float m_groundLevel;
+	bool m_onGround;
 
 	PlayerState m_previousState;
 	PlayerState m_playerState;

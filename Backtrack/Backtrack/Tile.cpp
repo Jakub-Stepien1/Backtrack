@@ -6,7 +6,7 @@ Tile::Tile()
 
 	rectangle.setFillColor(sf::Color::Transparent);
 	rectangle.setOutlineColor(sf::Color(100,100,100));
-	rectangle.setSize(sf::Vector2f(18.0f * 2, 18.0f * 2));
+	rectangle.setSize(sf::Vector2f(18.0f * TILE_SCALE, 18.0f * TILE_SCALE));
 
 	outlineVisible = false;
 	empty = true;
@@ -57,7 +57,7 @@ void Tile::passTexture(sf::Texture& t_texture)
 {
 	texture = &t_texture;
 	sprite.emplace(*texture);
-	sprite->setScale(sf::Vector2f(2.0f, 2.0f));
+	sprite->setScale(sf::Vector2f(TILE_SCALE, TILE_SCALE));
 	sprite->setTextureRect(tileRect);
 }
 
@@ -344,7 +344,7 @@ sf::Vector2f Tile::getPosition()
 
 sf::Vector2f Tile::getCenter()
 {
-	sf::Vector2f center = sf::Vector2f(position.x + rectangle.getSize().x, position.y + rectangle.getSize().y);
+	sf::Vector2f center = sf::Vector2f(position.x + rectangle.getSize().x / 2.0f, position.y + rectangle.getSize().y / 2.0f);
 	return center;
 }
 

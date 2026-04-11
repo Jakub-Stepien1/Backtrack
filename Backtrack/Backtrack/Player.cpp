@@ -15,9 +15,9 @@ Player::Player() :
 	m_maxHealth = 2;
 	m_health = m_maxHealth;
 
-	m_position = sf::Vector2f(100.0f, 400.0f);
+	m_position = sf::Vector2f(200.0f, 600.0f);
 	m_spritePosition = sf::Vector2f(m_position.x + 6.0f, m_position.y - 6.0f);
-	m_speed = 1.5f;
+	m_speed = sf::Vector2f(2.0f, 1.2f);
 
 	m_hitbox.setSize(sf::Vector2f(60.0f, 90.0f));
 	m_hitbox.setOrigin(m_hitbox.getSize() / 2.0f);
@@ -25,8 +25,6 @@ Player::Player() :
 	m_hitbox.setFillColor(sf::Color::Transparent);
 	m_hitbox.setOutlineColor(sf::Color::Green);
 	m_hitbox.setOutlineThickness(2.0f);
-
-	m_groundLevel = 2000.0f;
 
 	m_sprite.setTextureRect(sf::IntRect(sf::Vector2i(0.0f, 0.0f), m_frameSize));
 	m_sprite.setOrigin(sf::Vector2f(48.0f / 2.0f, 61.0f / 2.0f));
@@ -53,8 +51,11 @@ Player::~Player()
 
 void Player::update(sf::Vector2f t_viewPos)
 {
-	checkInput();
 	//checkState();
+	if (m_position.y > 1000.0f)
+	{
+		m_position.y = 400.0f;
+	}
 
 	updateHearts(t_viewPos);
 
@@ -91,8 +92,7 @@ void Player::checkInput()
 	{
 		m_sprite.setScale(sf::Vector2f(-PLAYER_SCALE, PLAYER_SCALE)); // Flip sprite left
 		m_velocity.x -= 0.5f;
-		if (m_playerState != PlayerState::Jumping 
-			&& m_playerState != PlayerState::Falling)
+		if (m_onGround)
 		{
 			m_playerState = PlayerState::Running;
 		}
@@ -101,8 +101,7 @@ void Player::checkInput()
 	{
 		m_sprite.setScale(sf::Vector2f(PLAYER_SCALE, PLAYER_SCALE)); // Flip sprite right
 		m_velocity.x += 0.5f;
-		if (m_playerState != PlayerState::Jumping 
-			&& m_playerState != PlayerState::Falling)
+		if (m_onGround)
 		{
 			m_playerState = PlayerState::Running;
 		}
@@ -114,8 +113,8 @@ void Player::checkInput()
 		&& m_playerState != PlayerState::Jumping 
 		&& m_playerState != PlayerState::Falling)
 	{
-		m_velocity.y = -10.0f;
 		m_playerState = PlayerState::Jumping;
+		m_velocity.y = -10.0f;
 	}
 
 	if (m_hasDoubleJump)
@@ -124,14 +123,19 @@ void Player::checkInput()
 			&& m_playerState != PlayerState::Jumping
 			&& m_doubleJumpReady)
 		{
-			m_velocity.y = -10.0f;
 			m_playerState = PlayerState::Jumping;
+			m_velocity.y = -10.0f;
 			m_doubleJumpReady = false;
 		}
 	}
-	
-	if (m_position.y < m_groundLevel)
+
+	if (!m_onGround)
 	{
+		if (m_velocity.y < 8.0f)
+		{
+			m_velocity.y += 0.4f; // Apply gravity	
+		}
+
 		if (m_velocity.y < 0.0f)
 		{
 			m_playerState = PlayerState::Jumping;
@@ -141,51 +145,24 @@ void Player::checkInput()
 			m_playerState = PlayerState::Falling;
 		}
 	}
-
-	if (m_playerState == PlayerState::Jumping || m_playerState == PlayerState::Falling)
-	{
-		if (m_velocity.y < 8.0f)
-		{
-			m_velocity.y += 0.4f; // Apply gravity	
-		}
-		
-		if (m_position.y > m_groundLevel)
-		{
-			if (m_groundLevel == 2000.0f) // if falls off map; come back
-			{
-				m_position.y = 400.0f;
-			}
-			else
-			{
-				m_position.y = m_groundLevel;
-			}
-			
-			m_velocity.y = 0.0f;
-			m_playerState = PlayerState::Idle;
-		}
-	}
 #pragma endregion
 	
 	if (std::abs(m_velocity.x) > 0.05f) // Apply friction
 	{
 		m_velocity.x *= 0.8f;
+		if (m_onGround)
+		{
+			m_playerState = PlayerState::Running;
+		}
 	}
 	else
 	{
 		m_velocity.x = 0.0f;
-		if (m_playerState != PlayerState::Jumping && m_playerState != PlayerState::Falling)
+		if (m_onGround)
 		{
 			m_playerState = PlayerState::Idle;
 		}
 	}
-
-	m_position += m_velocity * m_speed;
-	m_hitbox.setPosition(m_position);
-
-	m_spritePosition = sf::Vector2f(m_position.x + 2.0f, m_position.y - 6.0f);
-	m_sprite.setPosition(m_spritePosition);
-
-	//std::cout << m_velocity.x << std::endl;
 }
 
 void Player::checkState()
@@ -212,88 +189,114 @@ void Player::checkState()
 	}
 }
 
-void Player::checkCeilingCollisions(Tile& t_tile)
+void Player::applyVelocityX()
 {
-	sf::Vector2f topLeft = sf::Vector2f(m_position.x - m_hitbox.getSize().x / 2.0f, m_position.y - m_hitbox.getSize().y / 2.0f);
-	sf::Vector2f topRight = sf::Vector2f(m_position.x + m_hitbox.getSize().x / 2.0f, m_position.y - m_hitbox.getSize().y / 2.0f);
-
-	topLeft += m_velocity;
-	topRight += m_velocity;
-
-	if (t_tile.getShape().getGlobalBounds().contains(topLeft)
-		|| t_tile.getShape().getGlobalBounds().contains(topRight))
-	{
-		m_velocity = sf::Vector2f(m_velocity.x, 0.0f);
-		m_position += m_velocity;
-	}
+	m_position.x += m_velocity.x * m_speed.x;
+	m_hitbox.setPosition(m_position);
+	m_spritePosition = sf::Vector2f(m_position.x + 2.0f, m_position.y - 6.0f);
+	m_sprite.setPosition(m_spritePosition);
 }
 
-void Player::checkSideCollisions(Tile& t_tile)
+void Player::applyVelocityY()
 {
-	/*sf::Vector2f bottomLeft = sf::Vector2f(m_position.x - m_hitbox.getSize().x / 2.0f, m_position.y + m_hitbox.getSize().y / 2.0f);
-	sf::Vector2f bottomRight = sf::Vector2f(m_position.x + m_hitbox.getSize().x / 2.0f, m_position.y + m_hitbox.getSize().y / 2.0f);
-	sf::Vector2f topLeft = sf::Vector2f(m_position.x - m_hitbox.getSize().x / 2.0f, m_position.y - m_hitbox.getSize().y / 2.0f);
-	sf::Vector2f topRight = sf::Vector2f(m_position.x + m_hitbox.getSize().x / 2.0f, m_position.y - m_hitbox.getSize().y / 2.0f);
-	
-	bottomLeft += m_velocity;
-	bottomRight += m_velocity;
-	topLeft += m_velocity;
-	topRight += m_velocity;
+	m_position.y += m_velocity.y * m_speed.y;
+	m_hitbox.setPosition(m_position);
+	m_spritePosition = sf::Vector2f(m_position.x + 2.0f, m_position.y - 6.0f);
+	m_sprite.setPosition(m_spritePosition);
+}
 
-	std::cout << m_position.y + m_hitbox.getSize().y << "\t " << t_tile.getCenter().y + t_tile.getShape().getSize().y << std::endl;
-	if (m_position.y + m_hitbox.getSize().y == t_tile.getCenter().y + t_tile.getShape().getSize().y)
+void Player::checkCollisionX(Tile& t_tile)
+{
+	CollisionResult collision = getCollisionSide(t_tile);
+	if (collision.collided)
 	{
-		if (t_tile.getShape().getGlobalBounds().contains(bottomRight))
+		sf::Vector2f halfTileSize = t_tile.getShape().getGlobalBounds().size / 2.0f;
+		sf::Vector2f halfPlayerSize = m_hitbox.getGlobalBounds().size / 2.0f;
+
+		if (collision.side == CollisionSide::Left)
 		{
-			m_velocity = -m_velocity;
+			m_position.x = t_tile.getCenter().x - halfTileSize.x - halfPlayerSize.x;
+			m_velocity.x = 0.0f;
 		}
-	}*/
-	sf::Vector2f middleLeft = sf::Vector2f(m_position.x - m_hitbox.getSize().x / 2.0f, m_position.y);
-	sf::Vector2f middleRight = sf::Vector2f(m_position.x + m_hitbox.getSize().x / 2.0f, m_position.y);
-	
-	middleLeft += m_velocity;
-	middleRight += m_velocity;
-
-	if (t_tile.getShape().getGlobalBounds().contains(middleRight)
-		|| t_tile.getShape().getGlobalBounds().contains(middleLeft))
-	{
-		if (m_velocity != sf::Vector2f(0.0f, 0.0f))
+		else if (collision.side == CollisionSide::Right)
 		{
-			m_velocity = sf::Vector2f(-m_velocity.normalized().x * m_speed, 0.0f);
-			m_position += m_velocity;
+			m_position.x = t_tile.getCenter().x + halfTileSize.x + halfPlayerSize.x;
+			m_velocity.x = 0.0f;
 		}
 	}
+	
+	m_hitbox.setPosition(m_position);
 }
 
-bool Player::checkGroundCollisions(Tile& t_tile)
+void Player::checkCollisionY(Tile& t_tile)
 {
-	sf::Vector2f bottomLeft = sf::Vector2f(m_position.x - m_hitbox.getSize().x / 2.0f, m_position.y + m_hitbox.getSize().y / 2.0f);
-	sf::Vector2f bottomRight = sf::Vector2f(m_position.x + m_hitbox.getSize().x / 2.0f, m_position.y + m_hitbox.getSize().y / 2.0f);
-
-	bottomLeft += m_velocity;
-	bottomRight += m_velocity;
-
-	if (t_tile.getShape().getGlobalBounds().contains(bottomLeft)
-		&& bottomLeft.y < t_tile.getCenter().y
-		|| t_tile.getShape().getGlobalBounds().contains(bottomRight)
-		&& bottomRight.y < t_tile.getCenter().y)
+	CollisionResult collision = getCollisionSide(t_tile);
+	if (collision.collided)
 	{
-		calculateGroundLevel(t_tile);
-		m_doubleJumpReady = true;
-		return true;
+		sf::Vector2f halfTileSize = t_tile.getShape().getGlobalBounds().size / 2.0f;
+		sf::Vector2f halfPlayerSize = m_hitbox.getGlobalBounds().size / 2.0f;
+
+		if (collision.side == CollisionSide::Top)
+		{
+			m_position.y = t_tile.getCenter().y - halfTileSize.y - halfPlayerSize.y;
+			m_velocity.y = 0.0f;
+			m_onGround = true;
+			m_doubleJumpReady = true;
+
+			if (std::abs(m_velocity.x) > 0.05f)
+				m_playerState = PlayerState::Running;
+			else
+				m_playerState = PlayerState::Idle;
+		}
+		else if (collision.side == CollisionSide::Bottom)
+		{
+			m_position.y = t_tile.getCenter().y + halfTileSize.y + halfPlayerSize.y;
+			m_velocity.y = 0.0f;
+		}
+	}
+	m_hitbox.setPosition(m_position);
+}
+
+CollisionResult Player::getCollisionSide(Tile& t_tile)
+{
+	CollisionResult result = { false, CollisionSide::None };
+
+	sf::FloatRect playerBounds = m_hitbox.getGlobalBounds();
+	sf::FloatRect tileBounds = t_tile.getShape().getGlobalBounds();
+
+	if (playerBounds.findIntersection(tileBounds))
+	{
+		result.collided = true;
+		auto intersection = playerBounds.findIntersection(tileBounds);
+
+		float overlapX = intersection->size.x;
+		float overlapY = intersection->size.y;
+
+		if (overlapX < overlapY) // Smaller X overlap = side collision
+		{
+			if (playerBounds.getCenter().x < tileBounds.getCenter().x)
+			{
+				result.side = CollisionSide::Left;
+			}
+			else
+			{
+				result.side = CollisionSide::Right;
+			}
+		}
+		else // Smaller Y overlap = top/bottom collision
+		{
+			if (playerBounds.getCenter().y < tileBounds.getCenter().y)
+			{
+				result.side = CollisionSide::Top;
+			}
+			else
+			{
+				result.side = CollisionSide::Bottom;
+			}
+		}
 	}
 
-	return false;
-}
-
-void Player::calculateGroundLevel(Tile& t_tile)
-{
-	m_groundLevel = t_tile.getPosition().y - m_hitbox.getSize().y / 2.0f;
-}
-
-void Player::setGroundLevel(float t_groundLevel)
-{
-	m_groundLevel = t_groundLevel;
+	return result;
 }
 
 void Player::checkNewItem()
@@ -441,6 +444,11 @@ void Player::setToLevelStart()
 {
 	m_position = sf::Vector2f(50.0f, m_position.y);
 
+}
+
+void Player::setOnGround(bool t_onGround)
+{
+	m_onGround = t_onGround;
 }
 
 std::vector<sf::Sprite>& Player::getHearts()
