@@ -300,6 +300,36 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 		}*/
 	}
 
+	if (t_surrounding.left == 0
+		&& t_surrounding.right == t_tileType
+		&& t_surrounding.top == 0
+		&& t_surrounding.bottom == 0)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = GRASS_SINGLE_LEFT;
+		}
+		/*else if (t_tileType == 2)
+		{
+			tileRect = BRICK_SINGLE_LEFT;
+		}*/
+	}
+
+	if (t_surrounding.left == t_tileType
+		&& t_surrounding.right == 0
+		&& t_surrounding.top == 0
+		&& t_surrounding.bottom == 0)
+	{
+		if (t_tileType == 1)
+		{
+			tileRect = GRASS_SINGLE_RIGHT;
+		}
+		/*else if (t_tileType == 2)
+		{
+			tileRect = BRICK_SINGLE_RIGHT;
+		}*/
+	}
+
 	sprite->setTextureRect(tileRect);
 }
 

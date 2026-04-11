@@ -37,6 +37,9 @@ const sf::IntRect GRASS_CORNER_TOP_RIGHT{ sf::Vector2i(72, 54), TILE_SIZE };
 const sf::IntRect GRASS_DIAGONAL_LEFT{ sf::Vector2i(72, 90), TILE_SIZE };
 const sf::IntRect GRASS_DIAGONAL_RIGHT{ sf::Vector2i(54, 90), TILE_SIZE };
 
+const sf::IntRect GRASS_SINGLE_LEFT{ sf::Vector2i(54, 72), TILE_SIZE };
+const sf::IntRect GRASS_SINGLE_RIGHT{ sf::Vector2i(72, 72), TILE_SIZE };
+
 // Brick Tiles
 const sf::IntRect BRICK_TOP_LEFT{ sf::Vector2i(0, 0), TILE_SIZE };
 const sf::IntRect BRICK_TOP_MIDDLE{ sf::Vector2i(18, 0), TILE_SIZE };

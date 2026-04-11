@@ -17,7 +17,7 @@ Player::Player() :
 
 	m_position = sf::Vector2f(200.0f, 600.0f);
 	m_spritePosition = sf::Vector2f(m_position.x + 6.0f, m_position.y - 6.0f);
-	m_speed = sf::Vector2f(2.0f, 1.2f);
+	m_speed = sf::Vector2f(2.0f, 1.0f);
 
 	m_hitbox.setSize(sf::Vector2f(60.0f, 90.0f));
 	m_hitbox.setOrigin(m_hitbox.getSize() / 2.0f);
@@ -40,7 +40,8 @@ Player::Player() :
 		heartContainer.setScale(sf::Vector2f(3.0f, 3.0f));
 		m_heartSprites.push_back(heartContainer);
 	}
-
+	
+	m_onGround = false;
 	m_doubleJumpReady = false;
 	m_hasDoubleJump = false;
 }
@@ -305,10 +306,14 @@ void Player::checkNewItem()
 	switch (itemCount)
 	{
 		case 1:
+			std::cout << "Key item collected: " << itemCount << "\tSpeed\n";
+			m_speed.x = 2.5f;
+			break;
+		case 2:
 			std::cout << "Key item collected: " << itemCount << "\tDouble Jump\n";
 			m_hasDoubleJump = true;
 			break;
-		case 2:
+		case 3: 
 			std::cout << "Key item collected: " << itemCount << "\tDash\n";
 			//TO BE ADDED
 			break;
@@ -337,6 +342,11 @@ void Player::updateHearts(sf::Vector2f t_viewPos)
 			m_heartSprites[i].setTextureRect(HEART_EMPTY);
 		}
 	}
+}
+
+void Player::takeDamage()
+{
+	m_health -= 1;
 }
 
 void Player::animate()

@@ -48,6 +48,8 @@ public:
 
 	void updateHearts(sf::Vector2f t_viewPos);
 
+	void takeDamage();
+
 	void animate();
 	void playAnimationOnce();
 	void addFrame(sf::IntRect& t_frame);

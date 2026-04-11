@@ -106,10 +106,18 @@ void Inventory::addItem(sf::Texture* t_item)
 	m_itemCount++;
 	Item newItem(t_item);
 	
-	if (m_itemCount == 1)
+	switch (m_itemCount)
 	{
+	case 1:
+		newItem.name = "Potion of Speed";
+		newItem.description = "Increases movement\nspeed";
+		break;
+	case 2:
 		newItem.name = "Potion of Leaping";
 		newItem.description = "Grants the ability\nto double jump.";
+		break;
+	default:
+		break;
 	}
 
 	newItem.sprite.setOrigin(newItem.sprite.getGlobalBounds().getCenter());

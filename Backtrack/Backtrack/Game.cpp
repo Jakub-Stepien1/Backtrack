@@ -793,11 +793,20 @@ void Game::loadLevel(int t_level)
 			m_tiles[row][col].setPosition(sf::Vector2f((col - 1) * 18 * TILE_SCALE, (row - 1) * 18 * TILE_SCALE)); // offset by one tile to account for offscreen tiles	
 		}
 	}
-
-	if (m_currentLevel == 5)
+	switch (m_currentLevel)
 	{
+	case 3:
 		m_keyItem = new Pickup();
 		m_keyItem->passTexture(m_doubleJumpPotionTexture);
-		m_keyItem->setPosition(sf::Vector2f(650.0f, 300.0f));
+		m_keyItem->setPosition(sf::Vector2f(1025.0f, 550.0f));
+		break;
+	case 5:
+		m_keyItem = new Pickup();
+		m_keyItem->passTexture(m_doubleJumpPotionTexture);
+		m_keyItem->setPosition(sf::Vector2f(700.0f, 500.0f));
+		break;
+	default:
+		break;
 	}
+
 }

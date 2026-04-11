@@ -2,9 +2,9 @@
 
 # (11/04/26)
 ## What was added to the game:
-> 1. Reworked how collision work, much more accurate now, less buggy
-> 2. Some changes to player movement speed.
-> 3. Working on levels.
+> 1. 5 level ready.
+> 2. Added an item that increases player speed on level 3.
+> 3. Moved double jump item to level 5.
 
 ## Need to focus on next:
 > 1. Add a dash to the player.
