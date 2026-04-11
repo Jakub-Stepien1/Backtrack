@@ -224,6 +224,14 @@ void Player::checkCollisionX(Tile& t_tile)
 			m_position.x = t_tile.getCenter().x + halfTileSize.x + halfPlayerSize.x;
 			m_velocity.x = 0.0f;
 		}
+
+		if (t_tile.isHarmful())
+		{
+			sf::Vector2f direction = (m_position - t_tile.getCenter()).normalized();
+			m_velocity = direction * 10.0f; // Knockback velocity
+			m_position += m_velocity; // Apply knockback immediately to prevent sticking to the tile
+			takeDamage();
+		}
 	}
 	
 	m_hitbox.setPosition(m_position);
@@ -253,6 +261,14 @@ void Player::checkCollisionY(Tile& t_tile)
 		{
 			m_position.y = t_tile.getCenter().y + halfTileSize.y + halfPlayerSize.y;
 			m_velocity.y = 0.0f;
+		}
+
+		if (t_tile.isHarmful())
+		{
+			sf::Vector2f direction = (m_position - t_tile.getCenter()).normalized();
+			m_velocity = direction * 10.0f; // Knockback velocity
+			m_position += m_velocity; // Apply knockback immediately to prevent sticking to the tile
+			takeDamage();
 		}
 	}
 	m_hitbox.setPosition(m_position);
@@ -346,7 +362,10 @@ void Player::updateHearts(sf::Vector2f t_viewPos)
 
 void Player::takeDamage()
 {
-	m_health -= 1;
+	if (m_health > 0)
+	{
+		m_health -= 1;
+	}
 }
 
 void Player::animate()
@@ -453,7 +472,6 @@ void Player::setFrames()
 void Player::setToLevelStart()
 {
 	m_position = sf::Vector2f(50.0f, m_position.y);
-
 }
 
 void Player::setOnGround(bool t_onGround)

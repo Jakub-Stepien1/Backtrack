@@ -16,6 +16,9 @@ const sf::IntRect HEART_FULL{ sf::Vector2i(34, 0), sf::Vector2i(17, 16) };
 
 ///////////////////////////////////////////////// Tile texture rectangles /////////////////////////////////////////////////
 
+const sf::IntRect SPIKES1{ sf::Vector2i(90, 0), TILE_SIZE };
+const sf::IntRect SPIKES2{ sf::Vector2i(90, 18), TILE_SIZE };
+
 // Grass Tiles
 const sf::IntRect GRASS_TOP_LEFT{ sf::Vector2i(0, 54), TILE_SIZE };
 const sf::IntRect GRASS_TOP_MIDDLE{ sf::Vector2i(18, 54), TILE_SIZE };

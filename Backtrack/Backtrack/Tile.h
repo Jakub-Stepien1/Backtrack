@@ -44,6 +44,7 @@ public:
 	sf::Vector2f getPosition();
 	sf::Vector2f getCenter();
 	const sf::RectangleShape& getShape();
+	bool isHarmful();
 
 private:
 	sf::Vector2f position;
@@ -54,6 +55,8 @@ private:
 	sf::IntRect tileRect;
 
 	sf::RectangleShape rectangle;
+
+	bool harmful;
 
 	bool outlineVisible;
 	bool empty;

@@ -8,6 +8,7 @@ Tile::Tile()
 	rectangle.setOutlineColor(sf::Color(100,100,100));
 	rectangle.setSize(sf::Vector2f(18.0f * TILE_SCALE, 18.0f * TILE_SCALE));
 
+	harmful = false;
 	outlineVisible = false;
 	empty = true;
 }
@@ -34,8 +35,26 @@ void Tile::setTile(int t_tile, SurroundingTiles t_surrounding)
 	if (t_tile == 0)
 	{
 		//rectangle.setFillColor(sf::Color::Transparent);
-		tileRect = sf::IntRect(sf::Vector2i(90, 0), sf::Vector2i(18, 18));
+		tileRect = sf::IntRect(sf::Vector2i(90, 90), TILE_SIZE);
+		sprite->setTextureRect(tileRect);
 		empty = true;
+	}
+	else if (t_tile == 3)
+	{
+		//rectangle.setFillColor(sf::Color::Red);
+		tileRect = SPIKES1;
+		harmful = true;
+		/*if (rand() % 2 == 0)
+		{
+			tileRect = SPIKES1;
+		}
+		else
+		{
+			tileRect = SPIKES2;
+		}*/
+		
+		sprite->setTextureRect(tileRect);
+		empty = false;
 	}
 	else
 	{
@@ -63,10 +82,19 @@ void Tile::passTexture(sf::Texture& t_texture)
 
 void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 {
+	if (t_tileType == 1)
+	{
+		tileRect = GRASS_TOP_MIDDLE;
+	}
+	else if (t_tileType == 2)
+	{
+		tileRect = BRICK_TOP_MIDDLE;
+	}
+
 	// Top Layer
-	if (t_surrounding.left == 0
+	if (t_surrounding.left != t_tileType
 		&& t_surrounding.right == t_tileType
-		&& t_surrounding.top == 0
+		&& t_surrounding.top != t_tileType
 		&& t_surrounding.bottom == t_tileType)
 	{
 		if (t_tileType == 1)
@@ -81,7 +109,7 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 
 	if (t_surrounding.left == t_tileType
 		&& t_surrounding.right == t_tileType
-		&& t_surrounding.top == 0
+		&& t_surrounding.top != t_tileType
 		&& t_surrounding.bottom == t_tileType)
 	{
 		if (t_tileType == 1)
@@ -95,8 +123,8 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 	}
 
 	if (t_surrounding.left == t_tileType
-		&& t_surrounding.right == 0
-		&& t_surrounding.top == 0
+		&& t_surrounding.right != t_tileType
+		&& t_surrounding.top != t_tileType
 		&& t_surrounding.bottom == t_tileType)
 	{
 		if (t_tileType == 1)
@@ -110,7 +138,7 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 	}
 
 	// Middle Layer
-	if (t_surrounding.left == 0
+	if (t_surrounding.left != t_tileType
 		&& t_surrounding.right == t_tileType
 		&& t_surrounding.top == t_tileType
 		&& t_surrounding.bottom == t_tileType)
@@ -141,7 +169,7 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 	}
 
 	if (t_surrounding.left == t_tileType
-		&& t_surrounding.right == 0
+		&& t_surrounding.right != t_tileType
 		&& t_surrounding.top == t_tileType
 		&& t_surrounding.bottom == t_tileType)
 	{
@@ -156,10 +184,10 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 	}
 
 	// Bottom Layer
-	if (t_surrounding.left == 0
+	if (t_surrounding.left != t_tileType
 		&& t_surrounding.right == t_tileType
 		&& t_surrounding.top == t_tileType
-		&& t_surrounding.bottom == 0)
+		&& t_surrounding.bottom != t_tileType)
 	{
 		if (t_tileType == 1)
 		{
@@ -174,7 +202,7 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 	if (t_surrounding.left == t_tileType
 		&& t_surrounding.right == t_tileType
 		&& t_surrounding.top == t_tileType
-		&& t_surrounding.bottom == 0)
+		&& t_surrounding.bottom != t_tileType)
 	{
 		if (t_tileType == 1)
 		{
@@ -187,9 +215,9 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 	}
 
 	if (t_surrounding.left == t_tileType
-		&& t_surrounding.right == 0
+		&& t_surrounding.right != t_tileType
 		&& t_surrounding.top == t_tileType
-		&& t_surrounding.bottom == 0)
+		&& t_surrounding.bottom != t_tileType)
 	{
 		if (t_tileType == 1)
 		{
@@ -206,7 +234,7 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 		&& t_surrounding.right == t_tileType
 		&& t_surrounding.top == t_tileType
 		&& t_surrounding.bottom == t_tileType
-		&& t_surrounding.bottomLeft == 0)
+		&& t_surrounding.bottomLeft != t_tileType)
 	{
 		if (t_tileType == 1)
 		{
@@ -222,7 +250,7 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 		&& t_surrounding.right == t_tileType
 		&& t_surrounding.top == t_tileType
 		&& t_surrounding.bottom == t_tileType
-		&& t_surrounding.bottomRight == 0)
+		&& t_surrounding.bottomRight != t_tileType)
 	{
 		if (t_tileType == 1)
 		{
@@ -238,7 +266,7 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 		&& t_surrounding.right == t_tileType
 		&& t_surrounding.top == t_tileType
 		&& t_surrounding.bottom == t_tileType
-		&& t_surrounding.topLeft == 0)
+		&& t_surrounding.topLeft != t_tileType)
 	{
 		if (t_tileType == 1)
 		{
@@ -254,7 +282,7 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 		&& t_surrounding.right == t_tileType
 		&& t_surrounding.top == t_tileType
 		&& t_surrounding.bottom == t_tileType
-		&& t_surrounding.topRight == 0)
+		&& t_surrounding.topRight != t_tileType)
 	{
 		if (t_tileType == 1)
 		{
@@ -270,8 +298,8 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 		&& t_surrounding.right == t_tileType
 		&& t_surrounding.top == t_tileType
 		&& t_surrounding.bottom == t_tileType
-		&& t_surrounding.topRight == 0
-		&& t_surrounding.bottomLeft == 0)
+		&& t_surrounding.topRight != t_tileType
+		&& t_surrounding.bottomLeft != t_tileType)
 	{
 		if (t_tileType == 1)
 		{
@@ -287,8 +315,8 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 		&& t_surrounding.right == t_tileType
 		&& t_surrounding.top == t_tileType
 		&& t_surrounding.bottom == t_tileType
-		&& t_surrounding.topLeft == 0
-		&& t_surrounding.bottomRight == 0)
+		&& t_surrounding.topLeft != t_tileType
+		&& t_surrounding.bottomRight != t_tileType)
 	{
 		if (t_tileType == 1)
 		{
@@ -300,10 +328,10 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 		}*/
 	}
 
-	if (t_surrounding.left == 0
+	if (t_surrounding.left != t_tileType
 		&& t_surrounding.right == t_tileType
-		&& t_surrounding.top == 0
-		&& t_surrounding.bottom == 0)
+		&& t_surrounding.top != t_tileType
+		&& t_surrounding.bottom != t_tileType)
 	{
 		if (t_tileType == 1)
 		{
@@ -316,9 +344,9 @@ void Tile::setTileRect(SurroundingTiles t_surrounding, int t_tileType)
 	}
 
 	if (t_surrounding.left == t_tileType
-		&& t_surrounding.right == 0
-		&& t_surrounding.top == 0
-		&& t_surrounding.bottom == 0)
+		&& t_surrounding.right != t_tileType
+		&& t_surrounding.top != t_tileType
+		&& t_surrounding.bottom != t_tileType)
 	{
 		if (t_tileType == 1)
 		{
@@ -381,4 +409,9 @@ sf::Vector2f Tile::getCenter()
 const sf::RectangleShape& Tile::getShape()
 {
 	return rectangle;
+}
+
+bool Tile::isHarmful()
+{
+	return harmful;
 }

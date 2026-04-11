@@ -280,6 +280,10 @@ void Game::updateLevelEditor(sf::Time t_deltaTime)
 	{
 		m_selectedTile = 2;
 	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num3))
+	{
+		m_selectedTile = 3;
+	}
 
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
@@ -318,12 +322,13 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 	m_player.checkInput();
 
 	m_player.applyVelocityX();
+
 	for (int row = 0; row < TILE_ROWS; row++)
 	{
 		for (int col = 0; col < TILE_COLS; col++)
 		{
 			if (m_grid[row][col] != 0
-				&& m_tiles[row][col].distanceToTile(m_player.getPosition()) < 150)
+				&& m_tiles[row][col].distanceToTile(m_player.getPosition()) < 80)
 			{
 				m_player.checkCollisionX(m_tiles[row][col]);
 			}
@@ -337,7 +342,7 @@ void Game::updateGameplay(sf::Time t_deltaTime)
 		for (int col = 0; col < TILE_COLS; col++)
 		{
 			if (m_grid[row][col] != 0
-				&& m_tiles[row][col].distanceToTile(m_player.getPosition()) < 150)
+				&& m_tiles[row][col].distanceToTile(m_player.getPosition()) < 80)
 			{
 				m_player.checkCollisionY(m_tiles[row][col]);
 			}
