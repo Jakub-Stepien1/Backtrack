@@ -3,7 +3,8 @@
 Player::Player() : 
 	m_texture("ASSETS\\IMAGES\\Characters\\all48x61-playerSheet.png"),
 	m_sprite(m_texture),
-	m_heartTexture("ASSETS\\IMAGES\\Items\\Hearts\\hearts.png")
+	m_heartTexture("ASSETS\\IMAGES\\Items\\Hearts\\hearts.png"),
+	m_reviveTexture("ASSETS\\IMAGES\\Characters\\star-Sheet91px.png")
 {
 	m_frameSize = sf::Vector2i(48, 61);
 	m_playerTime = sf::seconds(0.15f);
@@ -57,6 +58,16 @@ void Player::update(sf::Vector2f t_viewPos)
 	{
 		m_position.y = 400.0f;
 	}
+	if (m_position.x < 32.0f)
+	{
+		m_position.x = 32.0f;
+		m_sprite.setPosition(sf::Vector2f(32.0f, m_sprite.getPosition().y));
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T))
+	{
+		m_playerState = PlayerState::Reviving;
+	}
 
 	updateHearts(t_viewPos);
 
@@ -65,19 +76,21 @@ void Player::update(sf::Vector2f t_viewPos)
 		setFrames();
 	}
 
-	if (m_playerState != PlayerState::Jumping)
+	if (m_playerState == PlayerState::Jumping
+		|| m_playerState == PlayerState::Reviving
+		|| m_playerState == PlayerState::Dying)
 	{
-		animate();
+		playAnimationOnce();
 	}
 	else
 	{
-		playAnimationOnce();
+		animate();
 	}
 }
 
 void Player::render(sf::RenderWindow& t_window)
 {
-	t_window.draw(m_hitbox);
+	//t_window.draw(m_hitbox);
 	t_window.draw(m_sprite);	
 
 	for (const sf::Sprite& heart : m_heartSprites)
@@ -88,80 +101,84 @@ void Player::render(sf::RenderWindow& t_window)
 
 void Player::checkInput()
 {
+	if (m_playerState != PlayerState::Reviving
+		&& m_playerState != PlayerState::Dying)
+	{
 #pragma region Running
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-	{
-		m_sprite.setScale(sf::Vector2f(-PLAYER_SCALE, PLAYER_SCALE)); // Flip sprite left
-		m_velocity.x -= 0.5f;
-		if (m_onGround)
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 		{
-			m_playerState = PlayerState::Running;
+			m_sprite.setScale(sf::Vector2f(-PLAYER_SCALE, PLAYER_SCALE)); // Flip sprite left
+			m_velocity.x -= 0.5f;
+			if (m_onGround)
+			{
+				m_playerState = PlayerState::Running;
+			}
 		}
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-	{
-		m_sprite.setScale(sf::Vector2f(PLAYER_SCALE, PLAYER_SCALE)); // Flip sprite right
-		m_velocity.x += 0.5f;
-		if (m_onGround)
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 		{
-			m_playerState = PlayerState::Running;
+			m_sprite.setScale(sf::Vector2f(PLAYER_SCALE, PLAYER_SCALE)); // Flip sprite right
+			m_velocity.x += 0.5f;
+			if (m_onGround)
+			{
+				m_playerState = PlayerState::Running;
+			}
 		}
-	}
 
 #pragma endregion
 #pragma region Jumping
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) 
-		&& m_playerState != PlayerState::Jumping 
-		&& m_playerState != PlayerState::Falling)
-	{
-		m_playerState = PlayerState::Jumping;
-		m_velocity.y = -10.0f;
-	}
-
-	if (m_hasDoubleJump)
-	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)
 			&& m_playerState != PlayerState::Jumping
-			&& m_doubleJumpReady)
+			&& m_playerState != PlayerState::Falling)
 		{
 			m_playerState = PlayerState::Jumping;
 			m_velocity.y = -10.0f;
-			m_doubleJumpReady = false;
-		}
-	}
-
-	if (!m_onGround)
-	{
-		if (m_velocity.y < 8.0f)
-		{
-			m_velocity.y += 0.4f; // Apply gravity	
 		}
 
-		if (m_velocity.y < 0.0f)
+		if (m_hasDoubleJump)
 		{
-			m_playerState = PlayerState::Jumping;
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)
+				&& m_playerState != PlayerState::Jumping
+				&& m_doubleJumpReady)
+			{
+				m_playerState = PlayerState::Jumping;
+				m_velocity.y = -10.0f;
+				m_doubleJumpReady = false;
+			}
+		}
+
+		if (!m_onGround)
+		{
+			if (m_velocity.y < 8.0f)
+			{
+				m_velocity.y += 0.4f; // Apply gravity	
+			}
+
+			if (m_velocity.y < 0.0f)
+			{
+				m_playerState = PlayerState::Jumping;
+			}
+			else
+			{
+				m_playerState = PlayerState::Falling;
+			}
+		}
+#pragma endregion
+
+		if (std::abs(m_velocity.x) > 0.05f) // Apply friction
+		{
+			m_velocity.x *= 0.8f;
+			if (m_onGround)
+			{
+				m_playerState = PlayerState::Running;
+			}
 		}
 		else
 		{
-			m_playerState = PlayerState::Falling;
-		}
-	}
-#pragma endregion
-	
-	if (std::abs(m_velocity.x) > 0.05f) // Apply friction
-	{
-		m_velocity.x *= 0.8f;
-		if (m_onGround)
-		{
-			m_playerState = PlayerState::Running;
-		}
-	}
-	else
-	{
-		m_velocity.x = 0.0f;
-		if (m_onGround)
-		{
-			m_playerState = PlayerState::Idle;
+			m_velocity.x = 0.0f;
+			if (m_onGround)
+			{
+				m_playerState = PlayerState::Idle;
+			}
 		}
 	}
 }
@@ -184,6 +201,12 @@ void Player::checkState()
 		break;
 	case PlayerState::Dashing:
 		std::cout << "State: Dashing" << std::endl;
+		break;
+	case PlayerState::Dying:
+		std::cout << "State: Dying" << std::endl;
+		break;
+	case PlayerState::Reviving:
+		std::cout << "State: Reviving" << std::endl;
 		break;
 	default:
 		break;
@@ -251,11 +274,13 @@ void Player::checkCollisionY(Tile& t_tile)
 			m_velocity.y = 0.0f;
 			m_onGround = true;
 			m_doubleJumpReady = true;
-
-			if (std::abs(m_velocity.x) > 0.05f)
-				m_playerState = PlayerState::Running;
-			else
-				m_playerState = PlayerState::Idle;
+			if (m_playerState != PlayerState::Reviving)
+			{
+				if (std::abs(m_velocity.x) > 0.05f)
+					m_playerState = PlayerState::Running;
+				else
+					m_playerState = PlayerState::Idle;
+			}
 		}
 		else if (collision.side == CollisionSide::Bottom)
 		{
@@ -366,6 +391,12 @@ void Player::takeDamage()
 	{
 		m_health -= 1;
 	}
+
+	if (m_health <= 0)
+	{
+		m_playerState = PlayerState::Dying;
+		m_velocity = sf::Vector2f(0.0f, 0.0f);
+	}
 }
 
 void Player::animate()
@@ -400,6 +431,28 @@ void Player::playAnimationOnce()
 			if (m_currentPlayerFrame + 1 < m_playerFrames.size())
 			{
 				m_currentPlayerFrame++;
+			}
+			else 
+			{
+				if (m_playerState == PlayerState::Reviving)
+				{
+					m_playerState = PlayerState::Idle;
+					m_sprite.setTexture(m_texture);
+					m_sprite.setOrigin(sf::Vector2f(48.0f / 2.0f, 61.0f / 2.0f));
+					m_sprite.setScale(sf::Vector2f(PLAYER_SCALE, PLAYER_SCALE));
+					setFrames();
+				}
+				if (m_playerState == PlayerState::Dying)
+				{
+					m_playerState = PlayerState::Reviving;
+					m_health = m_maxHealth;
+					m_position = m_levelStartPosition;
+					m_hitbox.setPosition(m_position);
+					m_spritePosition = sf::Vector2f(m_position.x + 2.0f, m_position.y - 6.0f);
+					m_sprite.setPosition(m_spritePosition);
+					setFrames();
+				}
+				
 			}
 
 			m_playerClock.restart();
@@ -464,19 +517,41 @@ void Player::setFrames()
 		addFrame(sf::IntRect(sf::Vector2i(96, 183), m_frameSize));
 		addFrame(sf::IntRect(sf::Vector2i(144, 183), m_frameSize));
 		break;
+	case PlayerState::Dying:
+		m_playerTime = sf::seconds(0.10f);
+		m_sprite.setTexture(m_reviveTexture);
+		for (int i = 0; i < 9; i++)
+		{
+			addFrame(sf::IntRect(sf::Vector2i((9 - i) * 91, 0), sf::Vector2i(91, 91)));
+		}
+		m_sprite.setOrigin(sf::Vector2f(91.0f / 2.0f, 91.0f / 2.0f));
+		m_sprite.setScale(sf::Vector2f(1.0f, 1.0f));
+		break;
+	case PlayerState::Reviving:
+		m_playerTime = sf::seconds(0.10f);
+		for (int i = 0; i < 9; i++)
+		{
+			addFrame(sf::IntRect(sf::Vector2i(i * 91, 0), sf::Vector2i(91, 91)));
+		}
+		break;
 	default:
 		break;
 	}
 }
 
-void Player::setToLevelStart()
-{
-	m_position = sf::Vector2f(50.0f, m_position.y);
-}
-
 void Player::setOnGround(bool t_onGround)
 {
 	m_onGround = t_onGround;
+}
+
+void Player::setStartPosition(sf::Vector2f t_position)
+{
+	m_levelStartPosition = t_position;
+
+	m_position = t_position;
+	m_hitbox.setPosition(m_position);
+	m_spritePosition = sf::Vector2f(m_position.x + 2.0f, m_position.y - 6.0f);
+	m_sprite.setPosition(m_spritePosition);
 }
 
 std::vector<sf::Sprite>& Player::getHearts()

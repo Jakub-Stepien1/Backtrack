@@ -597,6 +597,8 @@ void Game::setupMenu()
 void Game::setupGameplay()
 {
 	m_currentLevel = 1;
+	sf::Vector2f levelStartPos = sf::Vector2f(200.0f, 600.0f);
+	m_player.setStartPosition(levelStartPos);
 	loadLevel(m_currentLevel);
 }
 
@@ -696,7 +698,8 @@ void Game::parallaxBackground(sf::Time t_deltaTime)
 void Game::progressLevel()
 {
 	m_currentLevel += 1;
-	m_player.setToLevelStart();
+	sf::Vector2f levelStartPos = sf::Vector2f(32.0f, m_player.getPosition().y);
+	m_player.setStartPosition(levelStartPos);
 	loadLevel(m_currentLevel);
 }
 

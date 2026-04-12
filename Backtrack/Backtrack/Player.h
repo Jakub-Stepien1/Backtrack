@@ -13,7 +13,9 @@ enum class PlayerState
 	Falling,
 	Dashing,
 	Sliding,
-	WallSliding
+	WallSliding,
+	Dying,
+	Reviving
 };
 
 enum class CollisionSide {
@@ -55,9 +57,8 @@ public:
 	void addFrame(sf::IntRect& t_frame);
 	void setFrames();
 
-	void setToLevelStart();
-
 	void setOnGround(bool t_onGround);
+	void setStartPosition(sf::Vector2f t_position);
 
 	std::vector<sf::Sprite>& getHearts();
 	sf::Vector2f getPosition();
@@ -67,6 +68,7 @@ public:
 private:
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;
+	sf::Texture m_reviveTexture;
 
 	sf::Texture m_heartTexture;
 	std::vector<sf::Sprite> m_heartSprites;
@@ -75,6 +77,8 @@ private:
 
 	int m_maxHealth;
 	int m_health;
+
+	sf::Vector2f m_levelStartPosition;
 
 	sf::Vector2f m_position;
 	sf::Vector2f m_spritePosition;
