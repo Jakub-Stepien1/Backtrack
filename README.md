@@ -2,9 +2,8 @@
 
 # (12/04/26)
 ## What was added to the game:
-> 1. Added a death and respawn animation, the player teleports back to the start of the current level if they lose all hp.
+> 1. Added player dash when pressing left shift.
 
 ## Need to focus on next:
-> 1. Add a dash to the player.
-> 2. Add challenge to game.
-> 3. Make levels.
+> 1. Add challenge to game.
+> 2. Make levels.

@@ -124,8 +124,12 @@ private:
 	sf::Clock m_gameTime;
 
 	sf::Texture m_tileSetTexture;
+
+	sf::Texture m_speedPotionTexture;
+	sf::Texture m_jumpHeightPotionTexture;
 	sf::Texture m_doubleJumpPotionTexture;
-	
+	sf::Texture m_dashPotionTexture;
+
 	sf::Texture m_logoTexture;
 	sf::Sprite m_logoSprite{ m_logoTexture };
 

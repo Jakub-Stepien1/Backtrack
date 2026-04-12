@@ -43,8 +43,14 @@ Player::Player() :
 	}
 	
 	m_onGround = false;
+
 	m_doubleJumpReady = false;
 	m_hasDoubleJump = false;
+
+	m_dashReady = false;
+	m_hasDash = true;
+	m_dashDuration = sf::seconds(0.2f);
+	m_dashCooldown = sf::seconds(2.0f);
 }
 
 Player::~Player()
@@ -53,7 +59,7 @@ Player::~Player()
 
 void Player::update(sf::Vector2f t_viewPos)
 {
-	//checkState();
+	checkState();
 	if (m_position.y > 1000.0f)
 	{
 		m_position.y = 400.0f;
@@ -62,11 +68,6 @@ void Player::update(sf::Vector2f t_viewPos)
 	{
 		m_position.x = 32.0f;
 		m_sprite.setPosition(sf::Vector2f(32.0f, m_sprite.getPosition().y));
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T))
-	{
-		m_playerState = PlayerState::Reviving;
 	}
 
 	updateHearts(t_viewPos);
@@ -128,7 +129,8 @@ void Player::checkInput()
 #pragma region Jumping
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)
 			&& m_playerState != PlayerState::Jumping
-			&& m_playerState != PlayerState::Falling)
+			&& m_playerState != PlayerState::Falling
+			&& m_playerState != PlayerState::Dashing)
 		{
 			m_playerState = PlayerState::Jumping;
 			m_velocity.y = -10.0f;
@@ -138,6 +140,7 @@ void Player::checkInput()
 		{
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)
 				&& m_playerState != PlayerState::Jumping
+				&& m_playerState != PlayerState::Dashing
 				&& m_doubleJumpReady)
 			{
 				m_playerState = PlayerState::Jumping;
@@ -146,7 +149,8 @@ void Player::checkInput()
 			}
 		}
 
-		if (!m_onGround)
+		if (!m_onGround
+			&& m_playerState != PlayerState::Dashing)
 		{
 			if (m_velocity.y < 8.0f)
 			{
@@ -178,6 +182,39 @@ void Player::checkInput()
 			if (m_onGround)
 			{
 				m_playerState = PlayerState::Idle;
+			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)
+			&& m_hasDash
+			&& m_dashReady)
+		{
+			m_playerState = PlayerState::Dashing;
+			if (m_sprite.getScale().x > 0)
+			{
+				m_velocity.x += 5.0f;
+			}
+			else
+			{
+				m_velocity.x -= 5.0f;
+			}
+			m_velocity.y = 0.0f;
+			m_dashReady = false;
+			m_dashDurationClock.restart();
+			m_dashCooldownClock.restart();
+		}
+
+		if (m_dashCooldownClock.getElapsedTime() > m_dashCooldown)
+		{
+			m_dashReady = true;
+		}
+
+		if (m_playerState == PlayerState::Dashing)
+		{
+			applyVelocityX();
+			applyVelocityY();
+			if (m_dashDurationClock.getElapsedTime() >= m_dashDuration)
+			{
+				m_playerState = PlayerState::Falling;
 			}
 		}
 	}
@@ -274,7 +311,9 @@ void Player::checkCollisionY(Tile& t_tile)
 			m_velocity.y = 0.0f;
 			m_onGround = true;
 			m_doubleJumpReady = true;
-			if (m_playerState != PlayerState::Reviving)
+			if (m_playerState != PlayerState::Reviving
+				&& m_playerState != PlayerState::Dying
+				&& m_playerState != PlayerState::Dashing)
 			{
 				if (std::abs(m_velocity.x) > 0.05f)
 					m_playerState = PlayerState::Running;

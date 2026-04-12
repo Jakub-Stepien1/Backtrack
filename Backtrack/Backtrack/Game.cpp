@@ -531,9 +531,21 @@ void Game::setupImages()
 		std::cout << "problem loading tileset" << std::endl;
 	}
 
-	if (!m_doubleJumpPotionTexture.loadFromFile("ASSETS\\IMAGES\\Items\\Potions\\potion1.png"))
+	if (!m_speedPotionTexture.loadFromFile("ASSETS\\IMAGES\\Items\\Potions\\potion1.png"))
 	{
-		std::cout << "problem loading double jump potion" << std::endl;
+		std::cout << "problem loading potion1" << std::endl;
+	}
+	if (!m_doubleJumpPotionTexture.loadFromFile("ASSETS\\IMAGES\\Items\\Potions\\potion3.png"))
+	{
+		std::cout << "problem loading potion3" << std::endl;
+	}
+	if (!m_jumpHeightPotionTexture.loadFromFile("ASSETS\\IMAGES\\Items\\Potions\\potion4.png"))
+	{
+		std::cout << "problem loading potion4" << std::endl;
+	}
+	if (!m_dashPotionTexture.loadFromFile("ASSETS\\IMAGES\\Items\\Potions\\potion2.png"))
+	{
+		std::cout << "problem loading potion2" << std::endl;
 	}
 }
 
@@ -805,7 +817,7 @@ void Game::loadLevel(int t_level)
 	{
 	case 3:
 		m_keyItem = new Pickup();
-		m_keyItem->passTexture(m_doubleJumpPotionTexture);
+		m_keyItem->passTexture(m_speedPotionTexture);
 		m_keyItem->setPosition(sf::Vector2f(1025.0f, 550.0f));
 		break;
 	case 5:

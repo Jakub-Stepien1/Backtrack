@@ -38,12 +38,12 @@ void Tile::setTile(int t_tile, SurroundingTiles t_surrounding)
 		tileRect = sf::IntRect(sf::Vector2i(90, 90), TILE_SIZE);
 		sprite->setTextureRect(tileRect);
 		empty = true;
+		harmful = false;
 	}
 	else if (t_tile == 3)
 	{
 		//rectangle.setFillColor(sf::Color::Red);
-		tileRect = SPIKES1;
-		harmful = true;
+
 		/*if (rand() % 2 == 0)
 		{
 			tileRect = SPIKES1;
@@ -52,15 +52,17 @@ void Tile::setTile(int t_tile, SurroundingTiles t_surrounding)
 		{
 			tileRect = SPIKES2;
 		}*/
-		
+		tileRect = SPIKES1;
 		sprite->setTextureRect(tileRect);
 		empty = false;
+		harmful = true;
 	}
 	else
 	{
 		//rectangle.setFillColor(sf::Color::Black);
 		setTileRect(t_surrounding, t_tile);
 		empty = false;
+		harmful = false;
 	}
 }
 

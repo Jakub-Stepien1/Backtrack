@@ -90,6 +90,13 @@ private:
 	bool m_hasDoubleJump;
 	bool m_doubleJumpReady;
 
+	bool m_hasDash;
+	bool m_dashReady;
+	sf::Clock m_dashDurationClock;
+	sf::Time m_dashDuration;
+	sf::Clock m_dashCooldownClock;
+	sf::Time m_dashCooldown;
+
 	bool m_onGround;
 
 	PlayerState m_previousState;
