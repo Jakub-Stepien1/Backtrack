@@ -25,7 +25,6 @@
     <ClCompile Include="MenuButton.cpp" />
     <ClCompile Include="Pickup.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PlayerState.cpp" />
     <ClCompile Include="Tile.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -35,7 +34,6 @@
     <ClInclude Include="MenuButton.h" />
     <ClInclude Include="Pickup.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="PlayerState.h" />
     <ClInclude Include="Tile.h" />
   </ItemGroup>
   <ItemGroup>

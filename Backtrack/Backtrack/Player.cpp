@@ -42,15 +42,17 @@ Player::Player() :
 		m_heartSprites.push_back(heartContainer);
 	}
 	
+	m_deathCount = 0;
+
 	m_onGround = false;
 
 	m_doubleJumpReady = false;
 	m_hasDoubleJump = false;
 
 	m_dashReady = false;
-	m_hasDash = true;
+	m_hasDash = false;
 	m_dashDuration = sf::seconds(0.2f);
-	m_dashCooldown = sf::seconds(2.0f);
+	m_dashCooldown = sf::seconds(1.0f);
 }
 
 Player::~Player()
@@ -59,7 +61,7 @@ Player::~Player()
 
 void Player::update(sf::Vector2f t_viewPos)
 {
-	checkState();
+	//checkState();
 	if (m_position.y > 1000.0f)
 	{
 		m_position.y = 400.0f;
@@ -395,11 +397,16 @@ void Player::checkNewItem()
 			break;
 		case 3: 
 			std::cout << "Key item collected: " << itemCount << "\tDash\n";
-			//TO BE ADDED
+			m_hasDash = true;
 			break;
 		default:
 			break;
 	}
+}
+
+void Player::resetHealth()
+{
+	m_health = m_maxHealth;
 }
 
 void Player::updateHearts(sf::Vector2f t_viewPos)
@@ -435,6 +442,7 @@ void Player::takeDamage()
 	{
 		m_playerState = PlayerState::Dying;
 		m_velocity = sf::Vector2f(0.0f, 0.0f);
+		m_deathCount++;
 	}
 }
 
@@ -611,4 +619,9 @@ PlayerState Player::getState()
 Inventory& Player::getInventory()
 {
 	return m_inventory;
+}
+
+int Player::getDeathCount()
+{
+	return m_deathCount;
 }

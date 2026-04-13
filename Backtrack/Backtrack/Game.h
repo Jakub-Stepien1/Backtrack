@@ -28,7 +28,8 @@ enum Gamestate
 	LevelEditor,
 	Gameplay,
 	Pause,
-	Dialogue
+	Dialogue,
+	End
 };
 
 class Game
@@ -50,12 +51,14 @@ private:
 	void updateLevelEditor(sf::Time t_deltaTime);
 	void updateGameplay(sf::Time t_deltaTime);
 	void updatePause(sf::Time t_deltaTime);
+	void updateEnd(sf::Time t_deltaTime);
 
 	void renderTitleScreen();
 	void renderMenu();
 	void renderLevelEditor();
 	void renderGameplay();
 	void renderPause();
+	void renderEnd();
 
 	void setup();
 	
@@ -65,6 +68,7 @@ private:
 
 	void setupMenu();
 	void setupGameplay();
+	void setupEnd();
 
 	void changeGameState(Gamestate t_newState);
 	void handleCameraMovement(sf::Time t_deltaTime);
@@ -161,6 +165,10 @@ private:
 	sf::View m_defaultView;
 	sf::View m_playerView;
 	sf::View m_levelEditorView;
+
+	sf::Text m_youWinText{ m_backtrackFont };
+	sf::Text m_compTimeText{ m_backtrackFont };
+	sf::Text m_deathCountText{ m_backtrackFont };
 
 };
 

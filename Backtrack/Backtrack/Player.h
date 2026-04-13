@@ -1,6 +1,5 @@
 #pragma once
 
-#include "PlayerState.h"
 #include "Inventory.h"
 #include "Tile.h"
 
@@ -48,6 +47,7 @@ public:
 
 	void checkNewItem();
 
+	void resetHealth();
 	void updateHearts(sf::Vector2f t_viewPos);
 
 	void takeDamage();
@@ -64,6 +64,7 @@ public:
 	sf::Vector2f getPosition();
 	PlayerState getState();
 	Inventory& getInventory();
+	int getDeathCount();
 
 private:
 	sf::Texture m_texture;
@@ -77,6 +78,7 @@ private:
 
 	int m_maxHealth;
 	int m_health;
+	int m_deathCount;
 
 	sf::Vector2f m_levelStartPosition;
 

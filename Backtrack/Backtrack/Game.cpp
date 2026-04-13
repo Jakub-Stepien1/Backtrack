@@ -146,6 +146,8 @@ void Game::update(sf::Time t_deltaTime)
 		break;
 	case Dialogue:
 		break;
+	case End:
+		break;
 	default:
 		break;
 	}
@@ -176,6 +178,9 @@ void Game::render()
 		renderPause();
 		break;
 	case Dialogue:
+		break;
+	case End:
+		renderEnd();
 		break;
 	default:
 		break;
@@ -374,6 +379,10 @@ void Game::updatePause(sf::Time t_deltaTime)
 	m_player.getInventory().update(m_window);
 }
 
+void Game::updateEnd(sf::Time t_deltaTime)
+{
+}
+
 void Game::renderTitleScreen()
 {
 	m_window.draw(m_titleScreenBackgroundSprite);
@@ -438,6 +447,18 @@ void Game::renderPause()
 	m_player.getInventory().render(m_window, m_player.getHearts());
 }
 
+void Game::renderEnd()
+{
+	m_window.draw(m_background1Sprite);
+	m_window.draw(m_background2Sprite);
+	m_window.draw(m_background3Sprite);
+	m_window.draw(m_background4Sprite);
+
+	m_window.draw(m_youWinText);
+	m_window.draw(m_compTimeText);
+	m_window.draw(m_deathCountText);
+}
+
 /// <summary>
 /// load the font and setup the text message for screen
 /// </summary>
@@ -449,6 +470,7 @@ void Game::setup()
 
 	setupMenu(); // setup menu objects
 	setupGameplay(); // setup game objects
+	setupEnd(); // setup end screen objects
 
 }
 
@@ -614,6 +636,27 @@ void Game::setupGameplay()
 	loadLevel(m_currentLevel);
 }
 
+void Game::setupEnd()
+{
+	m_youWinText.setFont(m_backtrackFont);
+	m_youWinText.setCharacterSize(64U);
+	m_youWinText.setString("You Win!");
+	m_youWinText.setOrigin(m_youWinText.getLocalBounds().getCenter());
+	m_youWinText.setPosition(sf::Vector2f{ 684.0f, 384.0f });
+
+	m_compTimeText.setFont(m_backtrackFont);
+	m_compTimeText.setCharacterSize(32U);
+	m_compTimeText.setString("Completion Time: 00:00");
+	m_compTimeText.setOrigin(m_compTimeText.getLocalBounds().getCenter());
+	m_compTimeText.setPosition(sf::Vector2f{ 684.0f, 450.0f });
+
+	m_deathCountText.setFont(m_backtrackFont);
+	m_deathCountText.setCharacterSize(32U);
+	m_deathCountText.setString("Deaths: 0");
+	m_deathCountText.setOrigin(m_deathCountText.getLocalBounds().getCenter());
+	m_deathCountText.setPosition(sf::Vector2f{ 684.0f, 500.0f });
+}
+
 void Game::changeGameState(Gamestate t_newState)
 {
 	switch (t_newState)
@@ -641,6 +684,10 @@ void Game::changeGameState(Gamestate t_newState)
 		break;
 	case Dialogue:
 		m_currentGameState = Dialogue;
+		break;
+	case End:
+		m_window.setView(m_defaultView);
+		m_currentGameState = End;
 		break;
 	default:
 		break;
@@ -709,10 +756,47 @@ void Game::parallaxBackground(sf::Time t_deltaTime)
 
 void Game::progressLevel()
 {
-	m_currentLevel += 1;
-	sf::Vector2f levelStartPos = sf::Vector2f(32.0f, m_player.getPosition().y);
-	m_player.setStartPosition(levelStartPos);
-	loadLevel(m_currentLevel);
+	if (m_currentLevel < 16)
+	{
+		m_currentLevel += 1;
+		sf::Vector2f levelStartPos = sf::Vector2f(32.0f, m_player.getPosition().y);
+		m_player.setStartPosition(levelStartPos);
+		m_player.resetHealth();
+		loadLevel(m_currentLevel);
+	}
+	else
+	{
+		int minutes = static_cast<int>(m_gameTime.getElapsedTime().asSeconds()) / 60;
+		int seconds = static_cast<int>(m_gameTime.getElapsedTime().asSeconds()) % 60;
+
+		std::string timeString;
+
+		if (minutes < 10)
+		{
+			timeString = "Completion Time: 0";
+		}
+		else 
+		{
+			timeString = "Completion Time: ";
+		}
+
+		timeString += std::to_string(minutes) + ":";
+
+		if (seconds < 10)
+		{
+			timeString += "0" + std::to_string(seconds);
+		}
+		else
+		{
+			timeString += std::to_string(seconds);
+		}
+
+		m_compTimeText.setString(timeString);
+		
+		m_deathCountText.setString("Deaths: " + std::to_string(m_player.getDeathCount()));
+
+		changeGameState(Gamestate::End);
+	}
 }
 
 SurroundingTiles Game::getSurroundingTiles(int t_row, int t_col)
@@ -815,16 +899,26 @@ void Game::loadLevel(int t_level)
 	}
 	switch (m_currentLevel)
 	{
-	case 3:
+	case 4:
 		m_keyItem = new Pickup();
 		m_keyItem->passTexture(m_speedPotionTexture);
 		m_keyItem->setPosition(sf::Vector2f(1025.0f, 550.0f));
 		break;
-	case 5:
+	case 8:
 		m_keyItem = new Pickup();
 		m_keyItem->passTexture(m_doubleJumpPotionTexture);
 		m_keyItem->setPosition(sf::Vector2f(700.0f, 500.0f));
 		break;
+	case 12:
+		m_keyItem = new Pickup();
+		m_keyItem->passTexture(m_dashPotionTexture);
+		m_keyItem->setPosition(sf::Vector2f(700.0f, 75.0f));
+		break;
+	//case 16:
+	//	m_keyItem = new Pickup();
+	//	m_keyItem->passTexture(m_jumpHeightPotionTexture);
+	//	m_keyItem->setPosition(sf::Vector2f(300.0f, 500.0f));
+	//	break;
 	default:
 		break;
 	}

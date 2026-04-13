@@ -114,7 +114,11 @@ void Inventory::addItem(sf::Texture* t_item)
 		break;
 	case 2:
 		newItem.name = "Potion of Leaping";
-		newItem.description = "Grants the ability\nto double jump.";
+		newItem.description = "Grants the ability\nto double jump.\n\n[W] key while falling\nto jump again";
+		break;
+	case 3:
+		newItem.name = "Potion of Dashing";
+		newItem.description = "Grants the ability\nto dash.\n\n[LShift] key\nto dash";
 		break;
 	default:
 		break;
