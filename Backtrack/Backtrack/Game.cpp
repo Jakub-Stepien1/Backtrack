@@ -135,6 +135,8 @@ void Game::update(sf::Time t_deltaTime)
 	case Menu:
 		updateMenu(t_deltaTime);
 		break;
+	case Controls:
+		break;
 	case LevelEditor:
 		updateLevelEditor(t_deltaTime);
 		break;
@@ -167,6 +169,9 @@ void Game::render()
 		break;
 	case Menu:
 		renderMenu();
+		break;
+	case Controls:
+		renderControls();
 		break;
 	case LevelEditor:
 		renderLevelEditor();
@@ -245,9 +250,9 @@ void Game::updateMenu(sf::Time t_deltaTime)
 					}
 					changeGameState(Gamestate::LevelEditor);
 				}
-				else if (button.getText() == "Options")
+				else if (button.getText() == "Controls")
 				{
-					// Open options menu
+					changeGameState(Gamestate::Controls);
 				}
 				else if (button.getText() == "Exit")
 				{
@@ -271,6 +276,10 @@ void Game::updateMenu(sf::Time t_deltaTime)
 	}
 
 	m_logoSprite.move(m_textVel);
+}
+
+void Game::updateControls(sf::Time t_deltaTime)
+{
 }
 
 void Game::updateLevelEditor(sf::Time t_deltaTime)
@@ -402,6 +411,16 @@ void Game::renderMenu()
 	{
 		button.render(m_window);
 	}
+}
+
+void Game::renderControls()
+{
+	m_window.draw(m_background1Sprite);
+	m_window.draw(m_background2Sprite);
+	m_window.draw(m_background3Sprite);
+	m_window.draw(m_background4Sprite);
+
+	m_window.draw(m_controlsText);
 }
 
 void Game::renderLevelEditor()
@@ -586,6 +605,12 @@ void Game::setupFonts()
 	m_titleScreenText.setOutlineThickness(0.7f);
 	m_titleScreenText.setFillColor(sf::Color::White);
 
+	m_controlsText.setFont(m_backtrackFont);
+	m_controlsText.setCharacterSize(32U);
+	m_controlsText.setString("Controls:\n\nA / D - Left / Right\nW - Jump\nLeft Shift - Dash\nTab - Inventory\nEscape - Menu\n\nLevel Editor:\n1 - Grass\n2 - Brick\n3 - Spikes\nLMB - Place Tile\nRMB - Remove Tile\n S - Save level to new file");
+	m_controlsText.setOrigin(m_controlsText.getLocalBounds().getCenter());
+	m_controlsText.setPosition(sf::Vector2f{ 684.0f, 384.0f });
+
 	m_textVel = sf::Vector2f(0.0f, 3.0f);
 }
 
@@ -617,7 +642,7 @@ void Game::setupMenu()
 		}
 		else if (i == 2)
 		{
-			newButton.setText("Options");
+			newButton.setText("Controls");
 		}
 		else if (i == 3)
 		{
@@ -668,6 +693,10 @@ void Game::changeGameState(Gamestate t_newState)
 	case Menu:
 		m_window.setView(m_defaultView);
 		m_currentGameState = Menu;
+		break;
+	case Controls:
+		m_window.setView(m_defaultView);
+		m_currentGameState = Controls;
 		break;
 	case LevelEditor:
 		m_window.setView(m_levelEditorView);

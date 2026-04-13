@@ -25,6 +25,7 @@ enum Gamestate
 {
 	TitleScreen,
 	Menu,
+	Controls,
 	LevelEditor,
 	Gameplay,
 	Pause,
@@ -48,6 +49,7 @@ private:
 	
 	void updateTitleScreen(sf::Time t_deltaTime);
 	void updateMenu(sf::Time t_deltaTime);
+	void updateControls(sf::Time t_deltaTime);
 	void updateLevelEditor(sf::Time t_deltaTime);
 	void updateGameplay(sf::Time t_deltaTime);
 	void updatePause(sf::Time t_deltaTime);
@@ -55,6 +57,7 @@ private:
 
 	void renderTitleScreen();
 	void renderMenu();
+	void renderControls();
 	void renderLevelEditor();
 	void renderGameplay();
 	void renderPause();
@@ -170,6 +173,7 @@ private:
 	sf::Text m_compTimeText{ m_backtrackFont };
 	sf::Text m_deathCountText{ m_backtrackFont };
 
+	sf::Text m_controlsText{ m_backtrackFont };
 };
 
 #pragma warning( pop ) 
